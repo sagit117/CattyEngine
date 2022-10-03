@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
  * Движок ничего не знает об обработки ответа или запроса, за это отвечает класс в параметрах конструктора handler.
  */
 public final class CattyEngine implements ICattyEngine {
-    private static final Logger logger = LoggerFactory.getLogger(CattyEngine.class);
+    private static Logger logger = LoggerFactory.getLogger(CattyEngine.class);
     private final InetSocketAddress hostAddress;
     private final ExecutorService pool;
     private final int buffer_size = 16_384; // 16kb
@@ -49,8 +49,6 @@ public final class CattyEngine implements ICattyEngine {
         pool = Executors.newWorkStealingPool(poolLimit);
         this.limitAllocateBufferForRequest = limitAllocateBufferForRequest;
         engineHandler = handler;
-
-//        startServer();
     }
     /**
      * Конструктор класса
@@ -69,8 +67,10 @@ public final class CattyEngine implements ICattyEngine {
         this.pool = pool;
         this.limitAllocateBufferForRequest = limitAllocateBufferForRequest;
         engineHandler = handler;
+    }
 
-//        startServer();
+    public void setLogger(Logger loggerInstance) {
+        logger = loggerInstance;
     }
 
     /**
