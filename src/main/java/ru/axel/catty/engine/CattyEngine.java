@@ -38,21 +38,39 @@ public final class CattyEngine implements ICattyEngine {
      * @param poolLimit лимит потоков
      * @param limitAllocateBufferForRequest максимальный размер буфера для принятия запроса
      * @param handler класс обработчик запроса и ответа
-     * @throws IOException ошибка запуска сервера
      */
-    @SuppressWarnings("unchecked")
     public CattyEngine(
-            InetSocketAddress hostAddress,
-            int poolLimit,
-            int limitAllocateBufferForRequest,
-            @NotNull Class<? extends EngineHandlerImpl> handler
-    ) throws IOException {
+        InetSocketAddress hostAddress,
+        int poolLimit,
+        int limitAllocateBufferForRequest,
+        @NotNull Class<? extends EngineHandlerImpl> handler
+    ) {
         this.hostAddress = hostAddress;
         pool = Executors.newWorkStealingPool(poolLimit);
         this.limitAllocateBufferForRequest = limitAllocateBufferForRequest;
         engineHandler = handler;
 
-        startServer();
+//        startServer();
+    }
+    /**
+     * Конструктор класса
+     * @param hostAddress адрес сервера
+     * @param pool трэд пул
+     * @param limitAllocateBufferForRequest максимальный размер буфера для принятия запроса
+     * @param handler класс обработчик запроса и ответа
+     */
+    public CattyEngine(
+        InetSocketAddress hostAddress,
+        ExecutorService pool,
+        int limitAllocateBufferForRequest,
+        @NotNull Class<? extends EngineHandlerImpl> handler
+    ) {
+        this.hostAddress = hostAddress;
+        this.pool = pool;
+        this.limitAllocateBufferForRequest = limitAllocateBufferForRequest;
+        engineHandler = handler;
+
+//        startServer();
     }
 
     /**
