@@ -1,10 +1,9 @@
 package ru.axel.catty.engine;
 
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.axel.creator.instances.CreateInstanceException;
 import ru.axel.creator.instances.CreatorInstances;
+import ru.axel.logger.MiniLogger;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -18,18 +17,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 /**
  * Движок сервера, создает подключение и слушает указанный порт.
  * Движок ничего не знает об обработки ответа или запроса, за это отвечает класс в параметрах конструктора handler.
  */
 public final class CattyEngine implements ICattyEngine {
-    private static Logger logger = LoggerFactory.getLogger(CattyEngine.class);
+    private static Logger logger = MiniLogger.getLogger(CattyEngine.class);
     private final InetSocketAddress hostAddress;
     private final ExecutorService pool;
     private final int buffer_size = 16_384; // 16kb
     private volatile boolean stop = false;
-    private final Class<? extends EngineHandlerImpl> engineHandler;
+    private final Class<? extends EngineHandler> engineHandler;
     private final int limitAllocateBufferForRequest; // максимальный размер буфера для принятия запроса
 
     /**
@@ -43,7 +43,7 @@ public final class CattyEngine implements ICattyEngine {
         InetSocketAddress hostAddress,
         int poolLimit,
         int limitAllocateBufferForRequest,
-        @NotNull Class<? extends EngineHandlerImpl> handler
+        @NotNull Class<? extends EngineHandler> handler
     ) {
         this.hostAddress = hostAddress;
         pool = Executors.newWorkStealingPool(poolLimit);
@@ -53,18 +53,18 @@ public final class CattyEngine implements ICattyEngine {
     /**
      * Конструктор класса
      * @param hostAddress адрес сервера
-     * @param pool трэд пул
+     * @param executor трэд пул
      * @param limitAllocateBufferForRequest максимальный размер буфера для принятия запроса
      * @param handler класс обработчик запроса и ответа
      */
     public CattyEngine(
         InetSocketAddress hostAddress,
-        ExecutorService pool,
+        ExecutorService executor,
         int limitAllocateBufferForRequest,
-        @NotNull Class<? extends EngineHandlerImpl> handler
+        @NotNull Class<? extends EngineHandler> handler
     ) {
         this.hostAddress = hostAddress;
-        this.pool = pool;
+        pool = executor;
         this.limitAllocateBufferForRequest = limitAllocateBufferForRequest;
         engineHandler = handler;
     }
@@ -100,15 +100,16 @@ public final class CattyEngine implements ICattyEngine {
                 }
 
                 if (client != null && client.isOpen()) {
-                    EngineHandlerImpl handler;
+                    EngineHandler handler;
                     try {
-                        handler = CreatorInstances
-                                .createInstance(engineHandler, client, limitAllocateBufferForRequest);
+                        handler = CreatorInstances.createInstance(
+                            engineHandler,
+                            client,
+                            limitAllocateBufferForRequest
+                        );
                     } catch (
-                            InvocationTargetException
-                            | InstantiationException
-                            | IllegalAccessException
-                            | CreateInstanceException e
+                        InvocationTargetException | InstantiationException | IllegalAccessException
+                        | CreateInstanceException e
                     ) {
                         throw new RuntimeException(e);
                     }
@@ -125,7 +126,8 @@ public final class CattyEngine implements ICattyEngine {
 
             @Override
             public void failed(Throwable ex, Object attachment) {
-                logger.error("Ошибка принятия соединения от клиента. Инфо: " + attachment);
+                logger.finer("Ошибка принятия соединения от клиента. Инфо: " + attachment);
+                logger.throwing(CattyEngine.class.getName(), "loop", ex);
                 ex.printStackTrace();
             }
         });
