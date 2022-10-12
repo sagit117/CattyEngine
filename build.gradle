@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'ru.axel.catty.engine'
-version '1.0.3'
+version '1.0.4'
 
 repositories {
     mavenCentral()
@@ -16,7 +16,6 @@ repositories {
 dependencies {
     implementation(
         files(
-            "libs/CreatorInstances-1.0.2.jar",
             "libs/logger-1.0.0.jar"
         )
     )
