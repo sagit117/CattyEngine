@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
+/**
+ * Обработчик входящих запросов.
+ */
 public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer, Map<String, Object>> {
     protected final Logger logger;
     protected final AsynchronousSocketChannel client;
@@ -24,6 +27,11 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
         logger.severe("Handler create with client: " + clientChannel);
     }
 
+    /**
+     * Метод должен реализовать наполнение буфера данными ответа клиенту.
+     * @param requestBuffer буфера с данными запроса от клиента.
+     * @return буфера с данными ответа клиенту.
+     */
     protected abstract ByteBuffer responseBuffer(ByteBuffer requestBuffer);
 
     /**
@@ -103,9 +111,8 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
      */
     @Override
     public void failed(@NotNull Throwable exc, @NotNull Map<String, Object> attachment) {
-        logger.severe("Exception: " + exc);
         logger.severe("Attachment: " + attachment);
-
+        logger.throwing(this.getClass().getName(), "completed", exc);
         exc.printStackTrace();
 
         try {

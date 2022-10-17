@@ -2,6 +2,8 @@ package ru.axel.catty;
 
 import ru.axel.catty.engine.CattyEngine;
 import ru.axel.catty.engine.handler.HttpCattyQueryHandler;
+import ru.axel.catty.engine.request.Request;
+import ru.axel.catty.engine.request.RequestBuildException;
 import ru.axel.logger.MiniLogger;
 
 import java.io.IOException;
@@ -33,6 +35,14 @@ public class Main {
 
         @Override
         protected ByteBuffer responseBuffer(ByteBuffer requestBuffer) {
+            try {
+                var request = new Request(requestBuffer);
+                logger.severe("Request path: " + request.path);
+                logger.severe("Params: " + request.getQueryParam("test"));
+            } catch (RequestBuildException e) {
+                throw new RuntimeException(e);
+            }
+
             return ByteBuffer.wrap(
                 "HTTP/1.1 200\r\nContent-Type: text/html; charset=UTF-8\r\n\r\nOK".getBytes(Charset.defaultCharset())
             );

@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Вспомогательный класс с regex паттернами для тела запроса.
+ */
 public final class RegexPatterns {
     public static @NotNull Matcher boundaryFinished(String boundary, String str) {
         Pattern pattern = Pattern.compile("--" + boundary + "--");
