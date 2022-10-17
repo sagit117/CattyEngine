@@ -1,6 +1,8 @@
 package ru.axel.catty.engine;
 
 import org.jetbrains.annotations.NotNull;
+import ru.axel.catty.engine.handler.ClientActions;
+import ru.axel.catty.engine.handler.IQueryHandler;
 import ru.axel.logger.MiniLogger;
 
 import java.io.IOException;
@@ -26,7 +28,7 @@ public final class CattyEngine implements ICattyEngine {
     private final ExecutorService pool;
     private final int buffer_size = 16_384; // 16kb
     private volatile boolean stop = false;
-    private final QueryHandler queryHandler;
+    private final IQueryHandler queryHandler;
     private final int limitAllocateBufferForRequest; // максимальный размер буфера для принятия запроса
 
     /**
@@ -40,7 +42,7 @@ public final class CattyEngine implements ICattyEngine {
         InetSocketAddress hostAddress,
         int poolLimit,
         int limitAllocateBufferForRequest,
-        @NotNull QueryHandler handler
+        @NotNull IQueryHandler handler
     ) {
         this.hostAddress = hostAddress;
         pool = Executors.newWorkStealingPool(poolLimit);
@@ -58,7 +60,7 @@ public final class CattyEngine implements ICattyEngine {
         InetSocketAddress hostAddress,
         ExecutorService executor,
         int limitAllocateBufferForRequest,
-        @NotNull QueryHandler handler
+        @NotNull IQueryHandler handler
     ) {
         this.hostAddress = hostAddress;
         pool = executor;
@@ -66,6 +68,10 @@ public final class CattyEngine implements ICattyEngine {
         queryHandler = handler;
     }
 
+    /**
+     * Метод устанавливает логгер.
+     * @param loggerInstance объект логгера.
+     */
     public void setLogger(Logger loggerInstance) {
         logger = loggerInstance;
     }
@@ -85,31 +91,48 @@ public final class CattyEngine implements ICattyEngine {
     }
 
     /**
-     * Метод запускает петлю обработки событий
+     * Метод останавливает сервер
      */
     @Override
-    public void loop(@NotNull AsynchronousServerSocketChannel server) {
+    public void stopServer() {
+        stop = true;
+        pool.shutdown();
+    }
+
+    /**
+     * Метод запускает петлю обработки событий
+     */
+    private void loop(@NotNull AsynchronousServerSocketChannel server) {
         server.accept(null, new CompletionHandler<>() {
             @Override
             public void completed(AsynchronousSocketChannel client, Object attachment) {
-                if (server.isOpen()) {
+                if (server.isOpen()) { // если удалить условия не будет параллелизма в запросах
                     server.accept(null, this);
                 }
 
                 if (client != null && client.isOpen()) {
+                    logger.severe("Server accept: " + client);
                     ByteBuffer buffer = ByteBuffer.allocate(buffer_size);
 
                     Map<String, Object> readInfo = new HashMap<>();
-                    readInfo.put("action", "read");
+                    readInfo.put("action", ClientActions.READ);
                     readInfo.put("buffer", buffer);
 
-                    client.read(buffer, readInfo, queryHandler.getHandler());
+                    client.read(
+                        buffer,
+                        readInfo,
+                        queryHandler.getHandler(
+                            client,
+                            limitAllocateBufferForRequest,
+                            logger
+                        )
+                    );
                 }
             }
 
             @Override
             public void failed(Throwable ex, Object attachment) {
-                logger.finer("Ошибка принятия соединения от клиента. Инфо: " + attachment);
+                logger.severe("Ошибка принятия соединения от клиента. Инфо: " + attachment);
                 logger.throwing(CattyEngine.class.getName(), "loop", ex);
                 ex.printStackTrace();
             }
@@ -118,13 +141,5 @@ public final class CattyEngine implements ICattyEngine {
         while (!stop) {
             Thread.onSpinWait();
         }
-    }
-
-    /**
-     * Метод останавливает сервер
-     */
-    @Override
-    public void stopServer() {
-        stop = true;
     }
 }
