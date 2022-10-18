@@ -16,7 +16,9 @@ repositories {
 dependencies {
     implementation(
         files(
-            "libs/logger-1.0.0.jar"
+            "libs/logger-1.0.0.jar",
+            "libs/FileLoader-1.0.2.jar"
+//            "libs/Conveyor-1.0.1.jar"
         )
     )
     implementation 'org.jetbrains:annotations:23.0.0'

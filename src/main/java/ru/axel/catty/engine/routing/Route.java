@@ -4,6 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import ru.axel.catty.engine.request.IHttpCattyRequest;
 import ru.axel.catty.engine.response.IHttpCattyResponse;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
@@ -73,7 +75,7 @@ public class Route implements ICattyRoute {
      * @param response объект ответа
      */
     @Override
-    public void handle(IHttpCattyRequest request, IHttpCattyResponse response) {
+    public void handle(IHttpCattyRequest request, IHttpCattyResponse response) throws IOException, URISyntaxException {
         handler.exec(request, response);
     }
 }

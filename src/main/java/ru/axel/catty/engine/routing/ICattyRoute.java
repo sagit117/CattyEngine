@@ -3,6 +3,8 @@ package ru.axel.catty.engine.routing;
 import ru.axel.catty.engine.request.IHttpCattyRequest;
 import ru.axel.catty.engine.response.IHttpCattyResponse;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
 public interface ICattyRoute {
@@ -16,5 +18,5 @@ public interface ICattyRoute {
      * @param request объект запроса
      * @param response объект ответа
      */
-    void handle(IHttpCattyRequest request, IHttpCattyResponse response);
+    void handle(IHttpCattyRequest request, IHttpCattyResponse response) throws IOException, URISyntaxException;
 }

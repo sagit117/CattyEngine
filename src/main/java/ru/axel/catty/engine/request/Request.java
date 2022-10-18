@@ -130,6 +130,7 @@ public final class Request implements IHttpCattyRequest {
      * @param name имя параметра
      * @param value значение параметра
      */
+    @Override
     public void setParams(String name, String value) {
         params.put(name, value);
     }

@@ -1,6 +1,13 @@
 package ru.axel.catty.engine.request;
 
 public interface IHttpCattyRequest {
+    /**
+     * Добавление параметров строки запроса
+     * @param name имя параметра
+     * @param value значение параметра
+     */
+    void setParams(String name, String value);
+
     String getPath();
     String getMethod();
     String getVersion();

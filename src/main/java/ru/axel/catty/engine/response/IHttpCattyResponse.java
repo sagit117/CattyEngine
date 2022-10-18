@@ -56,5 +56,5 @@ public interface IHttpCattyResponse {
      * @return буффер байтов ответа.
      * @throws IOException ошибка записи байт в поток.
      */
-    ByteBuffer respond(ResponseCode code, String body) throws IOException;
+    void respond(ResponseCode code, String body) throws IOException;
 }

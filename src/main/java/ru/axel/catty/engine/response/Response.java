@@ -117,10 +117,8 @@ public class Response implements IHttpCattyResponse {
      * @return буффер байтов ответа.
      * @throws IOException ошибка записи байт в поток.
      */
-    public ByteBuffer respond(ResponseCode code, String body) throws IOException {
+    public void respond(ResponseCode code, String body) throws IOException {
         setResponseCode(code);
         addBody(body);
-
-        return getByteBuffer();
     }
 }
