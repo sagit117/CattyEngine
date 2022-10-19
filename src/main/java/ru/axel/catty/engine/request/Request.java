@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * Класс содержит данные запроса.
  */
 public final class Request implements IHttpCattyRequest {
-    private static final Logger logger = MiniLogger.getLogger(Request.class);
+    private final Logger logger;
     private final HashMap<String, String> headers = new HashMap<>();
     private final HashMap<String, String> cookie = new HashMap<>();
     private final HashMap<String, String> params = new HashMap<>();         // параметры из пути маршрута
@@ -31,11 +31,13 @@ public final class Request implements IHttpCattyRequest {
      * Создание экземпляра.
      * @param request строка переданная клиентом.
      */
-    public Request(@NotNull String request) throws RequestBuildException {
+    public Request(@NotNull String request, Logger loggerInstance) throws RequestBuildException {
+        logger = loggerInstance;
         originalRequest = request;
         rawRequest(originalRequest);
     }
-    public Request(@NotNull ByteBuffer request) throws RequestBuildException {
+    public Request(@NotNull ByteBuffer request, Logger loggerInstance) throws RequestBuildException {
+        logger = loggerInstance;
         originalRequest = new String(request.array()).trim();
         rawRequest(originalRequest);
     }

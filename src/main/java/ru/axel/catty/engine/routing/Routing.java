@@ -96,7 +96,7 @@ public class Routing implements IRouting {
      * @return маршрут подходящий под запрос или null.
      */
     @Override
-    public ICattyRoute takeRoute(@NotNull IHttpCattyRequest request) {
+    public @Nullable ICattyRoute takeRoute(@NotNull IHttpCattyRequest request) {
         return priorityRoute(getRoutesByPath(request.getPath(), request.getMethod()));
     }
 
@@ -128,7 +128,7 @@ public class Routing implements IRouting {
         String pattern = findUrl.keySet().stream()
             .sorted(Comparator.comparingInt(String::length))
             .max(Comparator.comparingInt(
-                    a -> a.replaceAll("\\(\\.\\*\\)", "").length()
+                a -> a.replaceAll("\\(\\.\\*\\)", "").length()
             )).orElseThrow();
 
         return findUrl.get(pattern);

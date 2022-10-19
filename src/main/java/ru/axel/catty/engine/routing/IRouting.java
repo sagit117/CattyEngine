@@ -1,6 +1,7 @@
 package ru.axel.catty.engine.routing;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.axel.catty.engine.request.IHttpCattyRequest;
 
 import java.net.URL;
@@ -52,5 +53,5 @@ public interface IRouting {
      * @param request запрос.
      * @return маршрут подходящий под запрос или null.
      */
-    ICattyRoute takeRoute(@NotNull IHttpCattyRequest request);
+    @Nullable ICattyRoute takeRoute(@NotNull IHttpCattyRequest request);
 }

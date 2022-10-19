@@ -19,6 +19,8 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Date;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class Main {
@@ -69,16 +71,20 @@ public class Main {
         @Override
         protected ByteBuffer responseBuffer(ByteBuffer requestBuffer) {
             try {
-                var request = new Request(requestBuffer);
-                var response = new Response();
+                var request = new Request(requestBuffer, logger);
+
+                var response = new Response(logger);
                 response.addHeader(Headers.DATE, String.valueOf(new Date()));
-                response.addHeader(Headers.CONTENT_TYPE, "text/html; charset=UTF-8");
                 response.addHeader(Headers.SERVER, "Catty");
                 response.addHeader(Headers.CONNECTION, "close");
 
+                var route = Optional.ofNullable(routing.takeRoute(request));
+
+                if (route.isPresent()) response.addHeader(Headers.CONTENT_TYPE, "text/html; charset=UTF-8");
+
                 try {
-                    routing.takeRoute(request).handle(request, response);
-                } catch (NullPointerException npe) {
+                    route.orElseThrow().handle(request, response);
+                } catch (NoSuchElementException exc) {
                     response.setResponseCode(ResponseCode.NOT_FOUND);
                 }
 

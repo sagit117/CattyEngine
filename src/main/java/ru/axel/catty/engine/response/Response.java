@@ -8,14 +8,20 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  * Класс содержит данные ответа клиенту.
  */
 public class Response implements IHttpCattyResponse {
+    private final Logger logger;
     private final HashMap<String, String> headers = new HashMap<>();
     private byte[] body;
     private int responseCode;
+
+    public Response(Logger loggerInstance) {
+        logger = loggerInstance;
+    }
 
     /**
      * Метод формирует строку ответа
@@ -71,10 +77,12 @@ public class Response implements IHttpCattyResponse {
     @Override
     public void setResponseCode(@NotNull ResponseCode code) {
         responseCode = code.getCode();
+        logger.severe("Установлен код ответа: " + code);
     }
     @Override
     public void setResponseCode(int code) {
         responseCode = code;
+        logger.severe("Установлен код ответа: " + code);
     }
 
     /**
@@ -115,9 +123,8 @@ public class Response implements IHttpCattyResponse {
      * @param code код ответа.
      * @param body тело ответа.
      * @return буффер байтов ответа.
-     * @throws IOException ошибка записи байт в поток.
      */
-    public void respond(ResponseCode code, String body) throws IOException {
+    public void respond(ResponseCode code, String body) {
         setResponseCode(code);
         addBody(body);
     }
