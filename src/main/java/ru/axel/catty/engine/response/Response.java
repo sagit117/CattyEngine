@@ -122,7 +122,6 @@ public class Response implements IHttpCattyResponse {
      * Метод объединяет установку кода ответа и тела.
      * @param code код ответа.
      * @param body тело ответа.
-     * @return буффер байтов ответа.
      */
     public void respond(ResponseCode code, String body) {
         setResponseCode(code);

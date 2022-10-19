@@ -7,8 +7,16 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
+/**
+ * Интерфейс маршрута
+ */
 public interface ICattyRoute {
     String getPath();
+
+    /**
+     * Метод возвращает паттерн для поиска подходящего маршрута.
+     * @return паттерн для поиска подходящего маршрута.
+     */
     Pattern getPattern();
     String getMethod();
     RouteExecute getHandler();

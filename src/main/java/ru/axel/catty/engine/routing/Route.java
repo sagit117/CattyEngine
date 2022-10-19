@@ -56,6 +56,11 @@ public class Route implements ICattyRoute {
     public String getPath() {
         return path;
     }
+
+    /**
+     * Метод возвращает паттерн для поиска подходящего маршрута.
+     * @return паттерн для поиска подходящего маршрута.
+     */
     @Override
     public Pattern getPattern() {
         return regex;
