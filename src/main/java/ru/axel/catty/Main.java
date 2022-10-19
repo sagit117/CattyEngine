@@ -1,10 +1,13 @@
 package ru.axel.catty;
 
 import ru.axel.catty.engine.CattyEngine;
+import ru.axel.catty.engine.ICattyEngine;
 import ru.axel.catty.engine.handler.HttpCattyQueryHandler;
 import ru.axel.catty.engine.headers.Headers;
+import ru.axel.catty.engine.request.IHttpCattyRequest;
 import ru.axel.catty.engine.request.Request;
 import ru.axel.catty.engine.request.RequestBuildException;
+import ru.axel.catty.engine.response.IHttpCattyResponse;
 import ru.axel.catty.engine.response.Response;
 import ru.axel.catty.engine.response.ResponseCode;
 import ru.axel.catty.engine.routing.ICattyRoute;
@@ -28,23 +31,25 @@ public class Main {
     private static final IRouting routing = new Routing();
 
     public static void main(String[] args) throws IOException {
-        ICattyRoute routeTest = new Route("/test", "GET", (request, response) -> {
+        final ICattyRoute routeTest = new Route("/test", "GET", (request, response) -> {
             logger.severe("Request path: " + request.getPath());
             logger.severe("Params: " + request.getQueryParam("test"));
 
-            var body = "<!DOCTYPE html>" +
-                    "<html>" +
-                    "<head>" +
-                    "<title>Status</title>" +
-                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"/static/index.css\">" +
-                    "</head>" +
-                    "<body>" +
-                    "<h1>Тестовая страница</h1>" +
-                    "<form method=\"post\" enctype=\"multipart/form-data\">" +
-                    "<input type=\"file\" name=\"file\" multiple>" +
-                    "<button type=\"submit\">SUBMIT</button>" +
-                    "</form>" +
-                    "</body>";
+            final String body = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Status</title>
+                    <link rel=\"stylesheet\" type=\"text/css\" href=\"/static/index.css\">
+                </head>
+                <body>
+                    <h1>Тестовая страница</h1>
+                    <form method=\"post\" enctype=\"multipart/form-data\">
+                        <input type=\"file\" name=\"file\" multiple>
+                        <button type=\"submit\">SUBMIT</button>
+                    </form>
+                </body>
+            """;
 
             response.respond(ResponseCode.OK, body);
         });
@@ -52,7 +57,7 @@ public class Main {
         routing.addRoute(routeTest);
         routing.staticResourceFiles("/static");
 
-        var engine = new CattyEngine(
+        final ICattyEngine engine = new CattyEngine(
             new InetSocketAddress(8080),
             10,
             5000000,
@@ -71,25 +76,30 @@ public class Main {
         @Override
         protected ByteBuffer responseBuffer(ByteBuffer requestBuffer) {
             try {
-                var request = new Request(requestBuffer, logger);
+                final IHttpCattyRequest request = new Request(requestBuffer, logger);
 
-                var response = new Response(logger);
+                final IHttpCattyResponse response = new Response(logger);
                 response.addHeader(Headers.DATE, String.valueOf(new Date()));
                 response.addHeader(Headers.SERVER, "Catty");
                 response.addHeader(Headers.CONNECTION, "close");
 
-                var route = Optional.ofNullable(routing.takeRoute(request));
+                final Optional<ICattyRoute> route = Optional.ofNullable(routing.takeRoute(request));
 
-                if (route.isPresent()) response.addHeader(Headers.CONTENT_TYPE, "text/html; charset=UTF-8");
+                if (route.isPresent()) {
+                    response.addHeader(Headers.CONTENT_TYPE, "text/html; charset=UTF-8");
+                }
 
                 try {
                     route.orElseThrow().handle(request, response);
                 } catch (NoSuchElementException exc) {
                     response.setResponseCode(ResponseCode.NOT_FOUND);
+                } catch (Throwable exc) {
+                    response.setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
+                    exc.printStackTrace();
                 }
 
                 return response.getByteBuffer();
-            } catch (RequestBuildException | IOException | URISyntaxException e) {
+            } catch (RequestBuildException | IOException e) {
                 throw new RuntimeException(e);
             }
         }

@@ -60,10 +60,9 @@ public class Routing implements IRouting {
     @Override
     public void staticFiles(URL pathFiles, String path) {
         addRoute(path + "/*", "GET", (request, response) -> {
-            var pathSplit = request.getPath().split("/");
-            String fileName = pathSplit[pathSplit.length - 1];
-
-            var file = new FileLoader(pathFiles.toString() + "/" + fileName);
+            final String[] pathSplit = request.getPath().split("/");
+            final String fileName = pathSplit[pathSplit.length - 1];
+            final FileLoader file = new FileLoader(pathFiles.toString() + "/" + fileName);
 
             response.setResponseCode(ResponseCode.OK);
             response.addHeader(Headers.CONTENT_TYPE, file.getMineFile() + "; charset=UTF-8");
@@ -78,7 +77,7 @@ public class Routing implements IRouting {
     @Override
     public void staticResourceFiles(String path) {
         addRoute(path + "/*", "GET", (request, response) -> {
-            var file = new FileLoader(
+            final var file = new FileLoader(
                 Objects.requireNonNull(
                     Routing.class.getResource(path + request.getPath().replace(path, ""))
                 )
@@ -106,7 +105,7 @@ public class Routing implements IRouting {
      * @return маршруты из массива routes соответствующие path
      */
     private @NotNull HashMap<String, ICattyRoute> getRoutesByPath(String path, String method) {
-        HashMap<String, ICattyRoute> findUrl = new HashMap<>();               // храним результаты поиска
+        final HashMap<String, ICattyRoute> findUrl = new HashMap<>(); // храним результаты поиска
 
         for (ICattyRoute route: routes) {
             if (route.getPattern().matcher(path).matches() && Objects.equals(route.getMethod(), method)) {
@@ -125,7 +124,7 @@ public class Routing implements IRouting {
     private @Nullable ICattyRoute priorityRoute(@NotNull HashMap<String, ICattyRoute> findUrl) {
         if (findUrl.size() == 0) return null;
 
-        String pattern = findUrl.keySet().stream()
+        final String pattern = findUrl.keySet().stream()
             .sorted(Comparator.comparingInt(String::length))
             .max(Comparator.comparingInt(
                 a -> a.replaceAll("\\(\\.\\*\\)", "").length()

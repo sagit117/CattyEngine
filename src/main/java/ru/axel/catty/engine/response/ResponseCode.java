@@ -19,13 +19,13 @@ public enum ResponseCode {
         this.code = code;
     }
 
-    public int getCode() {
+    final public int getCode() {
         return code;
     }
 
     @Contract(pure = true)
     @Override
-    public @NotNull String toString() {
+    final public @NotNull String toString() {
         return code + " " + name();
     }
 }

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.axel.catty.engine.request.IHttpCattyRequest;
 
+import java.io.IOException;
 import java.net.URL;
 
 public interface IRouting {

@@ -15,7 +15,12 @@ public enum Headers {
         this.headerName = headerName;
     }
 
-    public String getHeaderName() {
+    final public String getHeaderName() {
         return headerName;
+    }
+
+    @Override
+    final public String toString() {
+        return getHeaderName();
     }
 }

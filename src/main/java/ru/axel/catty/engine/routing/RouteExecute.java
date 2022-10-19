@@ -13,5 +13,5 @@ public interface RouteExecute {
     void exec(
         IHttpCattyRequest request,
         IHttpCattyResponse response
-    ) throws IOException, URISyntaxException;
+    ) throws IOException, URISyntaxException, NullPointerException;
 }

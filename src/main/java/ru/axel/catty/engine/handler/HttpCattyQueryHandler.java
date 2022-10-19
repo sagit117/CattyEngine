@@ -46,7 +46,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
 //        logger.severe("Attachment: " + attachment);
 //        logger.severe("Client: " + client);
 
-        ClientActions action = (ClientActions) attachment.get("action");
+        final ClientActions action = (ClientActions) attachment.get("action");
 
         /*
             Есть 2 кейса переполнения буфера:
@@ -59,7 +59,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
 
         if (action.equals(ClientActions.READ)) {
 //            logger.severe("Action: " + action.name());
-            ByteBuffer buffer = (ByteBuffer) attachment.get("buffer");
+            final ByteBuffer buffer = (ByteBuffer) attachment.get("buffer");
 
             // Если буффер заполнен или выделялся новый буфер(т.е. идет повторное чтение).
             if (result == buffer.capacity() || attachment.containsKey("newBuffer")) {
@@ -81,7 +81,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
         } else if (action.equals(ClientActions.WRITE)) {
 //            logger.severe("Action: " + action.name());
 
-            var buffer = attachment.containsKey("newBuffer")
+            final var buffer = attachment.containsKey("newBuffer")
                 ? (ByteBuffer) attachment.get("newBuffer")
                 : (ByteBuffer) attachment.get("buffer");
 //            logger.severe("Получено сообщение: " + new String(buffer.array()).trim());
@@ -137,19 +137,19 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
         @NotNull ByteBuffer oldBuffer,
         @NotNull Map<String, Object> attachment
     ) throws ExceptionExcessLimitAllocateBufferForRequest {
-        String receiveMsg = new String(oldBuffer.array()).trim(); // сообщение от клиента в строке
+        final String receiveMsg = new String(oldBuffer.array()).trim(); // сообщение от клиента в строке
 
         if (!attachment.containsKey("newBuffer")) { // буфер еще не выделялся
-            Matcher matcherContentLength = RegexPatterns.contentLength(receiveMsg); // ищем заголовок Content-Length
-            Matcher matcherBoundary = RegexPatterns.boundary(receiveMsg); // ищем разделитель партий тела
+            final Matcher matcherContentLength = RegexPatterns.contentLength(receiveMsg); // ищем заголовок Content-Length
+            final Matcher matcherBoundary = RegexPatterns.boundary(receiveMsg); // ищем разделитель партий тела
 
             if (matcherBoundary.find()) {
                 attachment.put("boundary", matcherBoundary.group(1));
             }
 
             if (matcherContentLength.find()) { // если заголовок найден, аллоцируем новый буфер
-                int contentLength = Integer.parseInt(matcherContentLength.group(1).trim());
-                int newBufferSize = contentLength + oldBuffer.capacity();
+                final int contentLength = Integer.parseInt(matcherContentLength.group(1).trim());
+                final int newBufferSize = contentLength + oldBuffer.capacity();
 
                 if (newBufferSize > limitAllocateBufferForRequest) {
                     throw new ExceptionExcessLimitAllocateBufferForRequest(
@@ -159,7 +159,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
                 }
 
                 // аллоцируем новый буфер
-                ByteBuffer newBuffer = ByteBuffer.allocate(newBufferSize);
+                final ByteBuffer newBuffer = ByteBuffer.allocate(newBufferSize);
                 logger.severe("Аллоцирован новый буфер: " + newBufferSize);
 
                 // записываем уже прочитанную информацию
@@ -171,10 +171,10 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
                 throw new ExceptionExcessLimitAllocateBufferForRequest("Не найден заголовок Content-Length");
             }
         } else {
-            String boundary = (String) attachment.get("boundary");
-            Matcher matcher = RegexPatterns.boundaryFinished(boundary, receiveMsg);
+            final String boundary = (String) attachment.get("boundary");
+            final Matcher matcher = RegexPatterns.boundaryFinished(boundary, receiveMsg);
 
-            ByteBuffer newBuffer = (ByteBuffer) attachment.get("newBuffer");
+            final ByteBuffer newBuffer = (ByteBuffer) attachment.get("newBuffer");
             newBuffer.put(oldBuffer.array(), 0, oldBuffer.position());
 
             if (matcher.find()) {

@@ -5,6 +5,8 @@ import ru.axel.catty.engine.headers.Headers;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public interface IHttpCattyResponse {
     /**
@@ -17,10 +19,15 @@ public interface IHttpCattyResponse {
 
     /**
      * Метод добавляет тело ответа
-     * @param body тело ответа
+     * @param bodyString тело ответа
      */
-    void addBody(@NotNull String body);
-    void addBody(byte @NotNull [] body);
+    void addBody(@NotNull String bodyString);
+
+    /**
+     * Метод добавляет тело ответа
+     * @param bodyBytes тело ответа
+     */
+    void addBody(byte @NotNull [] bodyBytes);
 
     /**
      * Метод устанавливает код ответа
@@ -37,6 +44,14 @@ public interface IHttpCattyResponse {
 
     /**
      * Метод возвращает массив байтов ответа
+     * @param charset кодировка.
+     * @throws IOException ошибка записи байт в поток.
+     * @return массив байтов ответа
+     */
+    byte @NotNull [] getBytes(Charset charset) throws IOException;
+
+    /**
+     * Метод возвращает массив байтов ответа в кодировке UTF_8.
      * @throws IOException ошибка записи байт в поток.
      * @return массив байтов ответа
      */

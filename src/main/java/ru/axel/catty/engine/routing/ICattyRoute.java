@@ -25,6 +25,12 @@ public interface ICattyRoute {
      * Выполнить обработку маршрута
      * @param request объект запроса
      * @param response объект ответа
+     * @throws IOException ошибка чтения статического файла.
+     * @throws URISyntaxException ошибка формирования URL при чтении статического файла.
+     * @throws NullPointerException не удалось получить статический файл.
      */
-    void handle(IHttpCattyRequest request, IHttpCattyResponse response) throws IOException, URISyntaxException;
+    void handle(
+        IHttpCattyRequest request,
+        IHttpCattyResponse response
+    ) throws IOException, URISyntaxException, NullPointerException;
 }

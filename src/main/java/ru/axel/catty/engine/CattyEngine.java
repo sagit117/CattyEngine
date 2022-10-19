@@ -82,8 +82,8 @@ public final class CattyEngine implements ICattyEngine {
      */
     @Override
     public void startServer() throws IOException {
-        AsynchronousChannelGroup group = AsynchronousChannelGroup.withThreadPool(pool);
-        AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open(group);
+        final AsynchronousChannelGroup group = AsynchronousChannelGroup.withThreadPool(pool);
+        final AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open(group);
         server.bind(hostAddress);
 
         logger.info("Сервер запущен на порту: " + hostAddress.getPort());
@@ -102,19 +102,19 @@ public final class CattyEngine implements ICattyEngine {
     /**
      * Метод запускает петлю обработки событий
      */
-    private void loop(@NotNull AsynchronousServerSocketChannel server) {
+    private void loop(final @NotNull AsynchronousServerSocketChannel server) {
         server.accept(null, new CompletionHandler<>() {
             @Override
-            public void completed(AsynchronousSocketChannel client, Object attachment) {
+            public void completed(final AsynchronousSocketChannel client, final Object attachment) {
                 if (server.isOpen()) { // если удалить условия не будет параллелизма в запросах
                     server.accept(null, this);
                 }
 
                 if (client != null && client.isOpen()) {
                     logger.severe("Server accept: " + client);
-                    ByteBuffer buffer = ByteBuffer.allocate(buffer_size);
+                    final ByteBuffer buffer = ByteBuffer.allocate(buffer_size);
 
-                    Map<String, Object> readInfo = new HashMap<>();
+                    final Map<String, Object> readInfo = new HashMap<>();
                     readInfo.put("action", ClientActions.READ);
                     readInfo.put("buffer", buffer);
 
@@ -131,7 +131,7 @@ public final class CattyEngine implements ICattyEngine {
             }
 
             @Override
-            public void failed(Throwable ex, Object attachment) {
+            public void failed(final Throwable ex, final Object attachment) {
                 logger.severe("Ошибка принятия соединения от клиента. Инфо: " + attachment);
                 logger.throwing(CattyEngine.class.getName(), "loop", ex);
                 ex.printStackTrace();

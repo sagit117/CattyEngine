@@ -10,15 +10,15 @@ import java.util.regex.Pattern;
  */
 public final class RegexPatterns {
     public static @NotNull Matcher boundaryFinished(String boundary, String str) {
-        Pattern pattern = Pattern.compile("--" + boundary + "--");
+        final Pattern pattern = Pattern.compile("--" + boundary + "--");
         return pattern.matcher(str);
     }
     public static @NotNull Matcher contentLength(String str) {
-        Pattern pattern = Pattern.compile("Content-Length: (\\d+)");
+        final Pattern pattern = Pattern.compile("Content-Length: (\\d+)");
         return pattern.matcher(str);
     }
     public static @NotNull Matcher boundary(String str) {
-        Pattern pattern = Pattern.compile("boundary=(.*)\r\n");
+        final Pattern pattern = Pattern.compile("boundary=(.*)\r\n");
         return pattern.matcher(str);
     }
 }

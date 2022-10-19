@@ -31,8 +31,8 @@ public class Route implements ICattyRoute {
      * @return паттерн для поиска подходящего маршрута
      */
     private @NotNull Pattern setRegex() {
-        StringBuilder regexPattern = new StringBuilder();
-        String[] pathSplit = path.split("/");      // делим маршрут на части
+        final StringBuilder regexPattern = new StringBuilder();
+        final String[] pathSplit = path.split("/");      // делим маршрут на части
 
         Arrays.stream(pathSplit).forEach(value -> {
             if (value.length() != 0) {                            // если часть маршрута пустая, добавляем "/"
@@ -78,9 +78,15 @@ public class Route implements ICattyRoute {
      * Выполнить обработку маршрута
      * @param request объект запроса
      * @param response объект ответа
+     * @throws IOException ошибка чтения статического файла.
+     * @throws URISyntaxException ошибка формирования URL при чтении статического файла.
+     * @throws NullPointerException не удалось получить статический файл.
      */
     @Override
-    public void handle(IHttpCattyRequest request, IHttpCattyResponse response) throws IOException, URISyntaxException {
+    public void handle(
+        IHttpCattyRequest request,
+        IHttpCattyResponse response
+    ) throws IOException, URISyntaxException, NullPointerException {
         handler.exec(request, response);
     }
 }

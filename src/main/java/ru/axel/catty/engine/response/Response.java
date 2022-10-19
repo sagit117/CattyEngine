@@ -6,6 +6,7 @@ import ru.axel.catty.engine.headers.Headers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -28,7 +29,7 @@ public class Response implements IHttpCattyResponse {
      * @return строка ответа
      */
     private @NotNull String getHeadResponse() {
-        StringBuilder responseLines = new StringBuilder();
+        final StringBuilder responseLines = new StringBuilder();
 
         responseLines.append("HTTP/1.1 ").append(responseCode).append("\r\n");
         headers.forEach((key, value) -> {
@@ -55,19 +56,24 @@ public class Response implements IHttpCattyResponse {
 
     /**
      * Метод добавляет тело ответа
-     * @param body тело ответа
+     * @param bodyString тело ответа
      */
     @Override
-    public void addBody(@NotNull String body) {
-        var bytes = body.getBytes(StandardCharsets.UTF_8);
+    public void addBody(@NotNull String bodyString) {
+        final byte[] bytes = bodyString.getBytes(StandardCharsets.UTF_8);
 
         addHeader(Headers.CONTENT_LENGTH, String.valueOf(bytes.length));
-        this.body = bytes;
+        body = bytes;
     }
+
+    /**
+     * Метод добавляет тело ответа
+     * @param bodyBytes тело ответа
+     */
     @Override
-    public void addBody(byte @NotNull [] body) {
-        addHeader(Headers.CONTENT_LENGTH, String.valueOf(body.length));
-        this.body = body;
+    public void addBody(byte @NotNull [] bodyBytes) {
+        addHeader(Headers.CONTENT_LENGTH, String.valueOf(bodyBytes.length));
+        body = bodyBytes;
     }
 
     /**
@@ -96,17 +102,35 @@ public class Response implements IHttpCattyResponse {
 
     /**
      * Метод возвращает массив байтов ответа
+     * @param charset кодировка.
+     * @throws IOException ошибка записи байт в поток.
+     * @return массив байтов ответа
+     */
+    @Override
+    public byte @NotNull [] getBytes(Charset charset) throws IOException {
+        final byte[] arrByte = getHeadResponse().getBytes(charset);
+
+        // ByteArrayOutputStream выбран как более элегантный способ с заделом на будущее, вместо например arraycopy.
+        try(final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            outputStream.write(arrByte);
+
+            if (body != null && body.length > 0) outputStream.write(body);
+
+            return outputStream.toByteArray();
+        } catch (Throwable exc) {
+            exc.printStackTrace();
+            throw exc;
+        }
+    }
+
+    /**
+     * Метод возвращает массив байтов ответа в кодировке UTF_8.
      * @throws IOException ошибка записи байт в поток.
      * @return массив байтов ответа
      */
     @Override
     public byte @NotNull [] getBytes() throws IOException {
-        var arrByte = getHeadResponse().getBytes(StandardCharsets.UTF_8);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(arrByte);
-        if (body != null && body.length > 0) outputStream.write(body);
-
-        return outputStream.toByteArray();
+        return getBytes(StandardCharsets.UTF_8);
     }
 
     /**

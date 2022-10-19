@@ -2,7 +2,6 @@ package ru.axel.catty.engine.request;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import ru.axel.logger.MiniLogger;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -49,7 +48,7 @@ public final class Request implements IHttpCattyRequest {
      * @throws RequestBuildException ошибка создания запроса.
      */
     private void rawRequest(@NotNull String request) throws RequestBuildException {
-        var lines = request.lines().toList();
+        final var lines = request.lines().toList();
         int index = -1;
 
         for (String line: lines) {
@@ -64,7 +63,7 @@ public final class Request implements IHttpCattyRequest {
                 break;
             }
 
-            var lineSplit = line.split(":");
+            final var lineSplit = line.split(":");
             headers.put(lineSplit[0].trim(), lineSplit[1].trim());
 
             if (lineSplit[0].toLowerCase(Locale.ROOT).equals("cookie")) setCookie(lineSplit[1]);
@@ -78,7 +77,8 @@ public final class Request implements IHttpCattyRequest {
      */
     private void setStartLine(@NotNull String line) throws RequestBuildException {
         logger.severe("StartLine: " + line);
-        String[] starts = line.split(" ");
+
+        final String[] starts = line.split(" ");
         if (starts.length != 3) throw new RequestBuildException("Bad start line");
 
         method = starts[0];
@@ -102,27 +102,28 @@ public final class Request implements IHttpCattyRequest {
      */
     private void setCookie(@NotNull String cookieRaw) {
         logger.severe("CookieRaw: " + cookieRaw);
-        var cookieSplit = cookieRaw.split(";");
+
+        final var cookieSplit = cookieRaw.split(";");
 
         Arrays.stream(cookieSplit).forEach(line -> {
-            var splitLine = line.split("=");
+            final var splitLine = line.split("=");
             cookie.put(splitLine[0].trim(), splitLine.length == 1 ? "" : splitLine[1]);
         });
     }
 
     @Contract(mutates = "this")
     private void setPath(@NotNull String pathRequest) {
-        var queryParam = pathRequest.split("\\?");
+        final var queryParam = pathRequest.split("\\?");
         path = queryParam[0];
 
         if (queryParam.length > 1) setQueryParams(queryParam[1]);
     }
 
     private void setQueryParams(@NotNull String params) {
-        var paramsString = params.split("&");
+        final var paramsString = params.split("&");
 
         for(String param : paramsString) {
-            var pairParam = param.split("=");
+            final var pairParam = param.split("=");
             queryParams.put(pairParam[0], pairParam.length > 1 ? pairParam[1] : null);
         }
     }
