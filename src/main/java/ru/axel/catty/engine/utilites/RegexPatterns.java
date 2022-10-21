@@ -21,4 +21,9 @@ public final class RegexPatterns {
         final Pattern pattern = Pattern.compile("boundary=(.*)\r\n");
         return pattern.matcher(str);
     }
+
+    public static @NotNull Matcher getParametersFromRoutePath(String path) {
+        final Pattern pattern = Pattern.compile("\\{(.+)}", Pattern.CASE_INSENSITIVE);
+        return pattern.matcher(path);
+    }
 }

@@ -9,9 +9,15 @@ import ru.axel.fileloader.FileLoader;
 
 import java.net.URL;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class Routing implements IRouting {
+    private final Logger logger;
     private final List<ICattyRoute> routes = new ArrayList<>();
+
+    public Routing(Logger loggerInstance) {
+        logger = loggerInstance;
+    }
 
     /**
      * Метод добавляет в коллекцию маршрут.
@@ -20,6 +26,7 @@ public class Routing implements IRouting {
     @Override
     public void addRoute(ICattyRoute route) {
         routes.add(route);
+        logger.config("Добавлен маршрут. " + route.getMethod() + ":" + route.getPath());
     }
     /**
      * Метод добавляет в коллекцию маршрут.
@@ -95,8 +102,14 @@ public class Routing implements IRouting {
      * @return маршрут подходящий под запрос или null.
      */
     @Override
-    public @Nullable ICattyRoute takeRoute(@NotNull IHttpCattyRequest request) {
-        return priorityRoute(getRoutesByPath(request.getPath(), request.getMethod()));
+    public Optional<ICattyRoute> takeRoute(@NotNull IHttpCattyRequest request) {
+        final var route = Optional.ofNullable(
+            priorityRoute(getRoutesByPath(request.getPath(), request.getMethod()))
+        );
+
+        route.ifPresent(request::setRoute);
+
+        return route;
     }
 
     /**

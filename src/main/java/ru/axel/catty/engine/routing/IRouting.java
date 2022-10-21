@@ -6,6 +6,7 @@ import ru.axel.catty.engine.request.IHttpCattyRequest;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 
 public interface IRouting {
     /**
@@ -54,5 +55,5 @@ public interface IRouting {
      * @param request запрос.
      * @return маршрут подходящий под запрос или null.
      */
-    @Nullable ICattyRoute takeRoute(@NotNull IHttpCattyRequest request);
+    Optional<ICattyRoute> takeRoute(@NotNull IHttpCattyRequest request);
 }

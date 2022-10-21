@@ -2,11 +2,17 @@ package ru.axel.catty.engine.request;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import ru.axel.catty.engine.response.IHttpCattyResponse;
+import ru.axel.catty.engine.routing.ICattyRoute;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,8 +29,9 @@ public final class Request implements IHttpCattyRequest {
     private final String originalRequest;
     private String body;
     private String method;
-    public String path;
+    private String path;
     private String version;
+    private ICattyRoute route;
 
     /**
      * Создание экземпляра.
@@ -138,6 +145,25 @@ public final class Request implements IHttpCattyRequest {
         params.put(name, value);
     }
 
+    /**
+     * Метод добавляет объект маршрута.
+     * @param originalRoute объект маршрута.
+     */
+    @Override
+    public void setRoute(ICattyRoute originalRoute) {
+        route = originalRoute;
+    }
+
+    /**
+     * Метод выполняет обработчик маршрута, который заложен в объекте маршрута.
+     *
+     * @param response объект ответа.
+     */
+    @Override
+    public void handle(IHttpCattyResponse response) throws IOException, URISyntaxException {
+        getRoute().orElseThrow().handle(this, response);
+    }
+
     @Override
     public String getPath() {
         return path;
@@ -151,15 +177,15 @@ public final class Request implements IHttpCattyRequest {
         return version;
     }
     @Override
-    public String getCookie(String name) {
+    public @Nullable String getCookie(String name) {
         return cookie.getOrDefault(name, null);
     }
     @Override
-    public String getHeaders(String name) {
+    public @Nullable String getHeaders(String name) {
         return headers.getOrDefault(name, null);
     }
     @Override
-    public String getParams(String name) {
+    public @Nullable String getParams(String name) {
         return params.getOrDefault(name, null);
     }
     @Override
@@ -173,5 +199,9 @@ public final class Request implements IHttpCattyRequest {
     @Override
     public String getQueryParam(String name) {
         return queryParams.get(name);
+    }
+    @Override
+    public Optional<ICattyRoute> getRoute() {
+        return Optional.ofNullable(route);
     }
 }

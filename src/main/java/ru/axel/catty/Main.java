@@ -4,6 +4,7 @@ import ru.axel.catty.engine.CattyEngine;
 import ru.axel.catty.engine.ICattyEngine;
 import ru.axel.catty.engine.handler.HttpCattyQueryHandler;
 import ru.axel.catty.engine.headers.Headers;
+import ru.axel.catty.engine.plugins.Plugins;
 import ru.axel.catty.engine.request.IHttpCattyRequest;
 import ru.axel.catty.engine.request.Request;
 import ru.axel.catty.engine.request.RequestBuildException;
@@ -18,19 +19,28 @@ import ru.axel.logger.MiniLogger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Date;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Main {
+    static {
+        MiniLogger.setLogLevel(Level.ALL);
+    }
+
     private static final Logger logger = MiniLogger.getLogger(Main.class);
-    private static final IRouting routing = new Routing();
+    private static final IRouting routing = new Routing(logger);
+    private static final Plugins plugins = new Plugins(logger);
 
     public static void main(String[] args) throws IOException {
+        plugins.addPipelines("default headers", (request, response) -> {
+            response.addHeader(Headers.DATE, String.valueOf(new Date()));
+            response.addHeader(Headers.SERVER, "Catty");
+            response.addHeader(Headers.CONNECTION, "close");
+        });
+
         final ICattyRoute routeTest = new Route("/test", "GET", (request, response) -> {
             logger.severe("Request path: " + request.getPath());
             logger.severe("Params: " + request.getQueryParam("test"));
@@ -40,21 +50,31 @@ public class Main {
                 <html>
                 <head>
                     <title>Status</title>
-                    <link rel=\"stylesheet\" type=\"text/css\" href=\"/static/index.css\">
+                    <link rel="stylesheet" type="text/css" href="/static/index.css">
                 </head>
                 <body>
                     <h1>Тестовая страница</h1>
-                    <form method=\"post\" enctype=\"multipart/form-data\">
-                        <input type=\"file\" name=\"file\" multiple>
-                        <button type=\"submit\">SUBMIT</button>
+                    <form method="post" enctype="multipart/form-data">
+                        <input type="file" name="file" multiple>
+                        <button type="submit">SUBMIT</button>
                     </form>
                 </body>
             """;
 
+            response.addHeader(Headers.CONTENT_TYPE, "text/html; charset=UTF-8");
             response.respond(ResponseCode.OK, body);
         });
 
+        final ICattyRoute routeParams = new Route("/params/{id}/get", "GET", (request, response) -> {
+            logger.severe("Request path: " + request.getPath());
+            logger.severe("Params id: " + request.getParams("id"));
+
+            response.addHeader(Headers.CONTENT_TYPE, "application/json; charset=UTF-8");
+            response.respond(ResponseCode.OK, "{\"status\": \"OK\"}");
+        });
+
         routing.addRoute(routeTest);
+        routing.addRoute(routeParams);
         routing.staticResourceFiles("/static");
 
         final ICattyEngine engine = new CattyEngine(
@@ -77,22 +97,16 @@ public class Main {
         protected ByteBuffer responseBuffer(ByteBuffer requestBuffer) {
             try {
                 final IHttpCattyRequest request = new Request(requestBuffer, logger);
-
                 final IHttpCattyResponse response = new Response(logger);
-                response.addHeader(Headers.DATE, String.valueOf(new Date()));
-                response.addHeader(Headers.SERVER, "Catty");
-                response.addHeader(Headers.CONNECTION, "close");
-
-                final Optional<ICattyRoute> route = Optional.ofNullable(routing.takeRoute(request));
-
-                if (route.isPresent()) {
-                    response.addHeader(Headers.CONTENT_TYPE, "text/html; charset=UTF-8");
-                }
 
                 try {
-                    route.orElseThrow().handle(request, response);
-                } catch (NoSuchElementException exc) {
-                    response.setResponseCode(ResponseCode.NOT_FOUND);
+                    if (routing.takeRoute(request).isPresent()) {
+                        plugins.exec(request, response);
+
+                        request.handle(response);
+                    } else {
+                        response.setResponseCode(ResponseCode.NOT_FOUND);
+                    }
                 } catch (Throwable exc) {
                     response.setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
                     exc.printStackTrace();
