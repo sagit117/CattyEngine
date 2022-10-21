@@ -51,9 +51,9 @@ public interface IRouting {
     void staticResourceFiles(String path);
 
     /**
-     * Метод возвращает маршрут подходящий под запрос.
+     * Метод возвращает маршрут подходящий под запрос и присваивает его объекту запроса.
      * @param request запрос.
-     * @return маршрут подходящий под запрос или null.
+     * @return маршрут подходящий под запрос.
      */
     Optional<ICattyRoute> takeRoute(@NotNull IHttpCattyRequest request);
 }
