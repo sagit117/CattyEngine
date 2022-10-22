@@ -77,14 +77,16 @@ public class Main {
         routing.addRoute(routeParams);
         routing.staticResourceFiles("/static");
 
-        final ICattyEngine engine = new CattyEngine(
+        try(final ICattyEngine engine = new CattyEngine(
             new InetSocketAddress(8080),
             10,
             5000000,
             Handler::new
-        );
-
-        engine.startServer();
+        )) {
+            engine.startServer();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
     }
 
     static class Handler extends HttpCattyQueryHandler {

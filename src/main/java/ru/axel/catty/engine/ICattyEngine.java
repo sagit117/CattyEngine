@@ -3,7 +3,7 @@ package ru.axel.catty.engine;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-public interface ICattyEngine {
+public interface ICattyEngine extends AutoCloseable {
     void setLogger(Logger loggerInstance);
     void startServer() throws IOException;
     void stopServer();
