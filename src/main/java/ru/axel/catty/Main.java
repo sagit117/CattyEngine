@@ -8,9 +8,7 @@ import ru.axel.catty.engine.plugins.Plugins;
 import ru.axel.catty.engine.request.IHttpCattyRequest;
 import ru.axel.catty.engine.request.Request;
 import ru.axel.catty.engine.request.RequestBuildException;
-import ru.axel.catty.engine.response.IHttpCattyResponse;
-import ru.axel.catty.engine.response.Response;
-import ru.axel.catty.engine.response.ResponseCode;
+import ru.axel.catty.engine.response.*;
 import ru.axel.catty.engine.routing.ICattyRoute;
 import ru.axel.catty.engine.routing.IRouting;
 import ru.axel.catty.engine.routing.Route;
@@ -21,6 +19,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.time.Instant;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,8 +72,25 @@ public class Main {
             response.respond(ResponseCode.OK, "{\"status\": \"OK\"}");
         });
 
+        final ICattyRoute routeTestCookie = new Route("/cookie/set", "GET", (request, response) -> {
+            ISetCookie cookie = new SetCookie("test", "test")
+                .setExpires(new Date())
+//                .setDomain("localhost")
+                .setHttpOnly(true)
+                .setMaxAge(3600)
+//                .setPath("/")
+                .setSecure(true)
+                .setSameSite(SameSite.STRICT);
+
+            logger.severe(cookie.toString());
+            response.setCookie(cookie);
+
+            response.respond(ResponseCode.OK, "OK");
+        });
+
         routing.addRoute(routeTest);
         routing.addRoute(routeParams);
+        routing.addRoute(routeTestCookie);
         routing.staticResourceFiles("/static");
 
         try(final ICattyEngine engine = new CattyEngine(

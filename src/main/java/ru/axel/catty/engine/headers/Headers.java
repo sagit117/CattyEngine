@@ -1,13 +1,14 @@
 package ru.axel.catty.engine.headers;
 
-public enum Headers {
+public enum Headers implements IHeaders {
     DATE            ("Date"),
     CONTENT_TYPE    ("Content-Type"),
     SERVER          ("Server"),
     CONNECTION      ("Connection"),
     CONTENT_LENGTH  ("Content-Length"),
     ACCEPT_ENCODING ("Accept-Encoding"),
-    CONTENT_ENCODING("Content-encoding");
+    CONTENT_ENCODING("Content-encoding"),
+    SET_COOKIE("Set-Cookie");
 
     private final String headerName;
 
@@ -15,6 +16,7 @@ public enum Headers {
         this.headerName = headerName;
     }
 
+    @Override
     final public String getHeaderName() {
         return headerName;
     }

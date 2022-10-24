@@ -7,6 +7,7 @@ import ru.axel.catty.engine.response.IHttpCattyResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -18,9 +19,13 @@ public class Route implements ICattyRoute {
     private final RouteExecute handler;
     private final Pattern regex;
 
-    public Route(String originalPath, String originalMethod, RouteExecute execute) {
+    public Route(
+        @NotNull String originalPath,
+        @NotNull String originalMethod,
+        @NotNull RouteExecute execute
+    ) {
         path = originalPath;
-        method = originalMethod;
+        method = originalMethod.toUpperCase(Locale.ROOT);
         handler = execute;
         regex = setRegex();
     }

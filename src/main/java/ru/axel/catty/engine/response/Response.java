@@ -2,6 +2,7 @@ package ru.axel.catty.engine.response;
 
 import org.jetbrains.annotations.NotNull;
 import ru.axel.catty.engine.headers.Headers;
+import ru.axel.catty.engine.headers.IHeaders;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class Response implements IHttpCattyResponse {
      * @param value значение заголовка
      */
     @Override
-    public void addHeader(@NotNull Headers header, String value) {
+    public void addHeader(@NotNull IHeaders header, String value) {
         headers.put(header.getHeaderName(), value);
     }
     @Override
@@ -150,5 +151,14 @@ public class Response implements IHttpCattyResponse {
     public void respond(ResponseCode code, String body) {
         setResponseCode(code);
         addBody(body);
+    }
+
+    /**
+     * Метод устанавливает в заголовок куки
+     * @param cookie объект хранения куки.
+     */
+    @Override
+    public void setCookie(@NotNull ISetCookie cookie) {
+        addHeader(Headers.SET_COOKIE, cookie.toString());
     }
 }

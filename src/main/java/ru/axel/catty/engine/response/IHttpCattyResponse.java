@@ -1,12 +1,11 @@
 package ru.axel.catty.engine.response;
 
 import org.jetbrains.annotations.NotNull;
-import ru.axel.catty.engine.headers.Headers;
+import ru.axel.catty.engine.headers.IHeaders;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 public interface IHttpCattyResponse {
     /**
@@ -14,7 +13,7 @@ public interface IHttpCattyResponse {
      * @param header имя заголовка
      * @param value значение заголовка
      */
-    void addHeader(@NotNull Headers header, String value);
+    void addHeader(@NotNull IHeaders header, String value);
     void addHeader(@NotNull String header, String value);
 
     /**
@@ -72,4 +71,10 @@ public interface IHttpCattyResponse {
      * @throws IOException ошибка записи байт в поток.
      */
     void respond(ResponseCode code, String body) throws IOException;
+
+    /**
+     * Метод устанавливает в заголовок куки
+     * @param cookie объект хранения куки.
+     */
+    void setCookie(ISetCookie cookie);
 }
