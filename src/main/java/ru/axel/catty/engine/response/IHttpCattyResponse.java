@@ -20,13 +20,13 @@ public interface IHttpCattyResponse {
      * Метод добавляет тело ответа
      * @param bodyString тело ответа
      */
-    void addBody(@NotNull String bodyString);
+    void setBody(@NotNull String bodyString);
 
     /**
      * Метод добавляет тело ответа
      * @param bodyBytes тело ответа
      */
-    void addBody(byte @NotNull [] bodyBytes);
+    void setBody(byte @NotNull [] bodyBytes);
 
     /**
      * Метод устанавливает код ответа
@@ -73,7 +73,7 @@ public interface IHttpCattyResponse {
     void respond(ResponseCode code, String body) throws IOException;
 
     /**
-     * Метод устанавливает в заголовок куки
+     * Метод устанавливает в заголовок куки.
      * @param cookie объект хранения куки.
      */
     void setCookie(ISetCookie cookie);

@@ -73,7 +73,7 @@ public class Routing implements IRouting {
 
             response.setResponseCode(ResponseCode.OK);
             response.addHeader(Headers.CONTENT_TYPE, file.getMineFile() + "; charset=UTF-8");
-            response.addBody(file.getBytes());
+            response.setBody(file.getBytes());
         });
     }
 
@@ -92,7 +92,7 @@ public class Routing implements IRouting {
 
             response.setResponseCode(ResponseCode.OK);
             response.addHeader(Headers.CONTENT_TYPE, file.getMineFile() + "; charset=UTF-8");
-            response.addBody(file.getBytes());
+            response.setBody(file.getBytes());
         });
     }
 

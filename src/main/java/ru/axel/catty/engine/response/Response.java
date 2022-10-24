@@ -60,7 +60,7 @@ public class Response implements IHttpCattyResponse {
      * @param bodyString тело ответа
      */
     @Override
-    public void addBody(@NotNull String bodyString) {
+    public void setBody(@NotNull String bodyString) {
         final byte[] bytes = bodyString.getBytes(StandardCharsets.UTF_8);
 
         addHeader(Headers.CONTENT_LENGTH, String.valueOf(bytes.length));
@@ -72,7 +72,7 @@ public class Response implements IHttpCattyResponse {
      * @param bodyBytes тело ответа
      */
     @Override
-    public void addBody(byte @NotNull [] bodyBytes) {
+    public void setBody(byte @NotNull [] bodyBytes) {
         addHeader(Headers.CONTENT_LENGTH, String.valueOf(bodyBytes.length));
         body = bodyBytes;
     }
@@ -150,11 +150,11 @@ public class Response implements IHttpCattyResponse {
      */
     public void respond(ResponseCode code, String body) {
         setResponseCode(code);
-        addBody(body);
+        setBody(body);
     }
 
     /**
-     * Метод устанавливает в заголовок куки
+     * Метод устанавливает в заголовок куки.
      * @param cookie объект хранения куки.
      */
     @Override

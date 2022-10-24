@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.time.Instant;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,7 +32,7 @@ public class Main {
     private static final IRouting routing = new Routing(logger);
     private static final Plugins plugins = new Plugins(logger);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         plugins.addPipelines("default headers", (request, response) -> {
             response.addHeader(Headers.DATE, String.valueOf(new Date()));
             response.addHeader(Headers.SERVER, "Catty");
@@ -73,7 +72,7 @@ public class Main {
         });
 
         final ICattyRoute routeTestCookie = new Route("/cookie/set", "GET", (request, response) -> {
-            ISetCookie cookie = new SetCookie("test", "test")
+            final ISetCookie cookie = new SetCookie("test", "test")
                 .setExpires(new Date())
 //                .setDomain("localhost")
                 .setHttpOnly(true)
