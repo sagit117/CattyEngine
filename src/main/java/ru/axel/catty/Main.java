@@ -20,6 +20,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Date;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,9 +40,15 @@ public class Main {
             response.addHeader(Headers.CONNECTION, "close");
         });
 
+        plugins.addPipelines("request id", (request, response) -> {
+            request.setParams("REQUEST_ID", UUID.randomUUID().toString());
+        });
+
         final ICattyRoute routeTest = new Route("/test", "GET", (request, response) -> {
             logger.severe("Request path: " + request.getPath());
             logger.severe("Params: " + request.getQueryParam("test"));
+
+            logger.severe("ID request: " + request.getParams("REQUEST_ID"));
 
             final String body = """
                 <!DOCTYPE html>
@@ -74,7 +81,7 @@ public class Main {
         final ICattyRoute routeTestCookie = new Route("/cookie/set", "GET", (request, response) -> {
             final ISetCookie cookie = new SetCookie("test", "test")
                 .setExpires(new Date())
-//                .setDomain("localhost")
+//                .setDomain("127.0.0.1")
                 .setHttpOnly(true)
                 .setMaxAge(3600)
 //                .setPath("/")
