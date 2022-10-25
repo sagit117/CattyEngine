@@ -24,7 +24,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
         limitAllocateBufferForRequest = limitBuffer;
         logger = loggerInstance;
 
-        logger.severe("Handler create with client: " + clientChannel);
+        logger.finest("Handler create with client: " + clientChannel);
     }
 
     /**
@@ -99,12 +99,12 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
 
             try {
                 client.close();
-                logger.severe("Client is close");
+                logger.finest("Client is close");
             } catch (IOException e) {
                 failed(e, attachment);
             }
         } else {
-            logger.severe("Client without attachment action: " + client);
+            logger.finest("Client without attachment action: " + client);
         }
     }
 
@@ -160,7 +160,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
 
                 // аллоцируем новый буфер
                 final ByteBuffer newBuffer = ByteBuffer.allocate(newBufferSize);
-                logger.severe("Аллоцирован новый буфер: " + newBufferSize);
+                logger.finest("Аллоцирован новый буфер: " + newBufferSize);
 
                 // записываем уже прочитанную информацию
                 newBuffer.put(oldBuffer.array(), 0, oldBuffer.position());
@@ -178,7 +178,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
             newBuffer.put(oldBuffer.array(), 0, oldBuffer.position());
 
             if (matcher.find()) {
-                logger.severe("Конец запроса");
+                logger.finest("Конец запроса");
 
                 oldBuffer.clear();
                 attachment.put("finished", true);

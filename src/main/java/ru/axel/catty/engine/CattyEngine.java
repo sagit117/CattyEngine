@@ -114,7 +114,7 @@ public final class CattyEngine implements ICattyEngine {
                 }
 
                 if (client != null && client.isOpen()) {
-                    logger.severe("Server accept: " + client);
+                    logger.finest("Server accept: " + client);
                     final ByteBuffer buffer = ByteBuffer.allocate(buffer_size);
 
                     final Map<String, Object> readInfo = new HashMap<>();

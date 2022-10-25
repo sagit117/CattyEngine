@@ -83,7 +83,7 @@ public final class Request implements IHttpCattyRequest {
      * @throws RequestBuildException если запрос не соответствует шаблону "Method Path Version".
      */
     private void setStartLine(@NotNull String line) throws RequestBuildException {
-        logger.severe("StartLine: " + line);
+        logger.finest("StartLine: " + line);
 
         final String[] starts = line.split(" ");
         if (starts.length != 3) throw new RequestBuildException("Bad start line");
@@ -92,7 +92,7 @@ public final class Request implements IHttpCattyRequest {
         setPath(starts[1]);
         version = starts[2];
 
-        logger.severe("Запрос создан. StartLine: " + String.join(", ", starts));
+        logger.finest("Запрос создан. StartLine: " + String.join(", ", starts));
     }
 
     /**
@@ -108,7 +108,7 @@ public final class Request implements IHttpCattyRequest {
      * @param cookieRaw запрос из заголовка cookie.
      */
     private void setCookie(@NotNull String cookieRaw) {
-        logger.severe("CookieRaw: " + cookieRaw);
+        logger.finest("CookieRaw: " + cookieRaw);
 
         final var cookieSplit = cookieRaw.split(";");
 

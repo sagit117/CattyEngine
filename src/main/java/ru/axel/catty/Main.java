@@ -45,10 +45,10 @@ public class Main {
         });
 
         final ICattyRoute routeTest = new Route("/test", "GET", (request, response) -> {
-            logger.severe("Request path: " + request.getPath());
-            logger.severe("Params: " + request.getQueryParam("test"));
+            logger.finest("Request path: " + request.getPath());
+            logger.finest("Params: " + request.getQueryParam("test"));
 
-            logger.severe("ID request: " + request.getParams("REQUEST_ID"));
+            logger.finest("ID request: " + request.getParams("REQUEST_ID"));
 
             final String body = """
                 <!DOCTYPE html>
@@ -71,8 +71,8 @@ public class Main {
         });
 
         final ICattyRoute routeParams = new Route("/params/{id}/get", "GET", (request, response) -> {
-            logger.severe("Request path: " + request.getPath());
-            logger.severe("Params id: " + request.getParams("id"));
+            logger.finest("Request path: " + request.getPath());
+            logger.finest("Params id: " + request.getParams("id"));
 
             response.addHeader(Headers.CONTENT_TYPE, "application/json; charset=UTF-8");
             response.respond(ResponseCode.OK, "{\"status\": \"OK\"}");
@@ -88,7 +88,7 @@ public class Main {
                 .setSecure(true)
                 .setSameSite(SameSite.STRICT);
 
-            logger.severe(cookie.toString());
+            logger.finest(cookie.toString());
             response.setCookie(cookie);
 
             response.respond(ResponseCode.OK, "OK");
