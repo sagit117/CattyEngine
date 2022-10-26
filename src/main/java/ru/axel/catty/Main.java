@@ -17,10 +17,13 @@ import ru.axel.logger.MiniLogger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,7 +44,9 @@ public class Main {
         });
 
         plugins.addPipelines("request id", (request, response) -> {
-            request.setParams("REQUEST_ID", UUID.randomUUID().toString());
+            var id = UUID.randomUUID();
+            request.setParams("REQUEST_ID", id.toString());
+            logger.finest("Set request ID: " + id);
         });
 
         final ICattyRoute routeTest = new Route("/test", "GET", (request, response) -> {
@@ -74,8 +79,18 @@ public class Main {
             logger.finest("Request path: " + request.getPath());
             logger.finest("Params id: " + request.getParams("id"));
 
+            if (Objects.equals(request.getParams("id"), "1")) {
+                System.out.println("SLEEP");
+                for (; true; ) {
+
+                }
+            }
+
+
             response.addHeader(Headers.CONTENT_TYPE, "application/json; charset=UTF-8");
             response.respond(ResponseCode.OK, "{\"status\": \"OK\"}");
+
+            logger.finest("Response for ID: " + request.getParams("REQUEST_ID"));
         });
 
         final ICattyRoute routeTestCookie = new Route("/cookie/set", "GET", (request, response) -> {
@@ -92,6 +107,8 @@ public class Main {
             response.setCookie(cookie);
 
             response.respond(ResponseCode.OK, "OK");
+
+            logger.finest("Response for ID: " + request.getParams("REQUEST_ID"));
         });
 
         routing.addRoute(routeTest);
@@ -101,7 +118,7 @@ public class Main {
 
         try(final ICattyEngine engine = new CattyEngine(
             new InetSocketAddress(8080),
-            10,
+            Executors.newSingleThreadExecutor(),
             5000000,
             Handler::new
         )) {
@@ -127,7 +144,17 @@ public class Main {
                     if (routing.takeRoute(request).isPresent()) {
                         plugins.exec(request, response);
 
-                        request.handle(response);
+                        CompletableFuture
+                            .runAsync(() -> {
+                                try {
+                                    request.handle(response);
+                                } catch (IOException | URISyntaxException e) {
+                                    response.setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
+                                    e.printStackTrace();
+                                }
+                            })
+                            .orTimeout(30, TimeUnit.SECONDS)
+                            .get();
                     } else {
                         response.setResponseCode(ResponseCode.NOT_FOUND);
                     }

@@ -121,6 +121,7 @@ public class Routing implements IRouting {
         final HashMap<String, ICattyRoute> findUrl = new HashMap<>(); // храним результаты поиска
 
         for (ICattyRoute route: routes) {
+            // бывает ошибка NPE
             if (route.getPattern().matcher(path).matches() && Objects.equals(route.getMethod(), method)) {
                 findUrl.put(route.getPattern().pattern(), route);
             }

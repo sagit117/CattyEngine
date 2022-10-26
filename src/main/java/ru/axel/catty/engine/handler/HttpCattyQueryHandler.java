@@ -8,6 +8,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
@@ -29,6 +31,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
 
     /**
      * Метод должен реализовать наполнение буфера данными ответа клиенту.
+     * Следует помнить, что блокировка внутри метода - будет блокировать весь поток.
      * @param requestBuffer буфера с данными запроса от клиента.
      * @return буфера с данными ответа клиенту.
      */
