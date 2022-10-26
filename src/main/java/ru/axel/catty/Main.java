@@ -29,12 +29,13 @@ import java.util.logging.Logger;
 
 public class Main {
     static {
-        MiniLogger.setLogLevel(Level.ALL);
+        MiniLogger.setLogLevel(Level.CONFIG);
     }
 
     private static final Logger logger = MiniLogger.getLogger(Main.class);
     private static final IRouting routing = new Routing(logger);
     private static final Plugins plugins = new Plugins(logger);
+    private static final long answerTimeout = 30;
 
     public static void main(String[] args) {
         plugins.addPipelines("default headers", (request, response) -> {
@@ -46,7 +47,7 @@ public class Main {
         plugins.addPipelines("request id", (request, response) -> {
             var id = UUID.randomUUID();
             request.setParams("REQUEST_ID", id.toString());
-            logger.finest("Set request ID: " + id);
+            logger.severe("Set request ID: " + id);
         });
 
         final ICattyRoute routeTest = new Route("/test", "GET", (request, response) -> {
@@ -107,8 +108,6 @@ public class Main {
             response.setCookie(cookie);
 
             response.respond(ResponseCode.OK, "OK");
-
-            logger.finest("Response for ID: " + request.getParams("REQUEST_ID"));
         });
 
         routing.addRoute(routeTest);
@@ -118,7 +117,7 @@ public class Main {
 
         try(final ICattyEngine engine = new CattyEngine(
             new InetSocketAddress(8080),
-            Executors.newSingleThreadExecutor(),
+            1,
             5000000,
             Handler::new
         )) {
@@ -141,27 +140,34 @@ public class Main {
                 final IHttpCattyResponse response = new Response(logger);
 
                 try {
-                    if (routing.takeRoute(request).isPresent()) {
+                    var route = routing.takeRoute(request);
+
+                    if (route.isPresent()) {
                         plugins.exec(request, response);
 
                         CompletableFuture
                             .runAsync(() -> {
                                 try {
-                                    request.handle(response);
+                                    route.get().handle(request, response);
                                 } catch (IOException | URISyntaxException e) {
                                     response.setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
                                     e.printStackTrace();
                                 }
                             })
-                            .orTimeout(30, TimeUnit.SECONDS)
+                            .orTimeout(answerTimeout, TimeUnit.SECONDS)
                             .get();
                     } else {
                         response.setResponseCode(ResponseCode.NOT_FOUND);
                     }
+                } catch (ExecutionException executionException) { // ожидание ответа превышено
+                    response.setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
                 } catch (Throwable exc) {
                     response.setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
                     exc.printStackTrace();
                 }
+
+                logger.severe("Response code: " + response.getResponseCode());
+                logger.severe("Request ID: " + request.getParams("REQUEST_ID"));
 
                 return response.getByteBuffer();
             } catch (RequestBuildException | IOException e) {

@@ -103,13 +103,9 @@ public class Routing implements IRouting {
      */
     @Override
     public Optional<ICattyRoute> takeRoute(@NotNull IHttpCattyRequest request) {
-        final var route = Optional.ofNullable(
+        return Optional.ofNullable(
             priorityRoute(getRoutesByPath(request.getPath(), request.getMethod()))
         );
-
-        route.ifPresent(request::setRoute);
-
-        return route;
     }
 
     /**
