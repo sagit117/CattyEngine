@@ -143,17 +143,18 @@ public class Main {
                     var route = routing.takeRoute(request);
 
                     if (route.isPresent()) {
+                        request.setRoute(route.get());
                         plugins.exec(request, response);
 
                         CompletableFuture
                             .runAsync(() -> {
                                 try {
-                                    route.get().handle(request, response);
+                                    request.handle(response);
                                 } catch (IOException | URISyntaxException e) {
                                     response.setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
                                     e.printStackTrace();
                                 }
-                            })
+                            }, Executors.newWorkStealingPool(1))
                             .orTimeout(answerTimeout, TimeUnit.SECONDS)
                             .get();
                     } else {
