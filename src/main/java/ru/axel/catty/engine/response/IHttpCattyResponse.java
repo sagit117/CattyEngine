@@ -71,6 +71,7 @@ public interface IHttpCattyResponse {
      * @throws IOException ошибка записи байт в поток.
      */
     void respond(ResponseCode code, String body) throws IOException;
+    void respond(ResponseCode code, byte[] body);
 
     /**
      * Метод устанавливает в заголовок куки.

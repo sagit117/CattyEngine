@@ -139,6 +139,7 @@ public class Response implements IHttpCattyResponse {
      * @throws IOException ошибка записи байт в поток.
      * @return буффер байтов ответа
      */
+    @Override
     public ByteBuffer getByteBuffer() throws IOException {
         return ByteBuffer.wrap(getBytes());
     }
@@ -148,7 +149,13 @@ public class Response implements IHttpCattyResponse {
      * @param code код ответа.
      * @param body тело ответа.
      */
+    @Override
     public void respond(ResponseCode code, String body) {
+        setResponseCode(code);
+        setBody(body);
+    }
+    @Override
+    public void respond(ResponseCode code, byte[] body) {
         setResponseCode(code);
         setBody(body);
     }
