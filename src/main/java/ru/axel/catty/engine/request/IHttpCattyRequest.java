@@ -22,6 +22,8 @@ public interface IHttpCattyRequest {
      */
     void setRoute(ICattyRoute originalRoute);
 
+    void setClientInfo(IClientInfo clientInfo);
+
     /**
      *  Метод выполняет обработчик маршрута, который заложен в объекте маршрута.
      * @param response объект ответа.
@@ -38,4 +40,10 @@ public interface IHttpCattyRequest {
     String getBody();
     String getQueryParam(String name);
     Optional<ICattyRoute> getRoute();
+
+    /**
+     * Метод возвращает объект данных клиента
+     * @return объект данных клиента
+     */
+    IClientInfo getClientInfo();
 }

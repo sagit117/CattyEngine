@@ -32,6 +32,7 @@ public final class Request implements IHttpCattyRequest {
     private String path;
     private String version;
     private ICattyRoute route;
+    private IClientInfo client;
 
     /**
      * Создание экземпляра.
@@ -154,6 +155,11 @@ public final class Request implements IHttpCattyRequest {
         route = originalRoute;
     }
 
+    @Override
+    public void setClientInfo(IClientInfo clientInfo) {
+        client = clientInfo;
+    }
+
     /**
      * Метод выполняет обработчик маршрута, который заложен в объекте маршрута.
      *
@@ -203,5 +209,14 @@ public final class Request implements IHttpCattyRequest {
     @Override
     public Optional<ICattyRoute> getRoute() {
         return Optional.ofNullable(route);
+    }
+    /**
+     * Метод возвращает объект данных клиента
+     *
+     * @return объект данных клиента
+     */
+    @Override
+    public IClientInfo getClientInfo() {
+        return client;
     }
 }

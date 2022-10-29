@@ -5,6 +5,7 @@ import ru.axel.catty.engine.ICattyEngine;
 import ru.axel.catty.engine.handler.HttpCattyQueryHandler;
 import ru.axel.catty.engine.headers.Headers;
 import ru.axel.catty.engine.plugins.Plugins;
+import ru.axel.catty.engine.request.ClientInfo;
 import ru.axel.catty.engine.request.IHttpCattyRequest;
 import ru.axel.catty.engine.request.Request;
 import ru.axel.catty.engine.request.RequestBuildException;
@@ -18,6 +19,7 @@ import ru.axel.logger.MiniLogger;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Date;
@@ -139,6 +141,8 @@ public class Main {
                 final IHttpCattyRequest request = new Request(requestBuffer, logger);
                 final IHttpCattyResponse response = new Response(logger);
 
+                request.setClientInfo(new ClientInfo(client.getLocalAddress(), client.getRemoteAddress()));
+
                 try {
                     var route = routing.takeRoute(request);
 
@@ -162,6 +166,7 @@ public class Main {
                     }
                 } catch (ExecutionException executionException) { // ожидание ответа превышено
                     response.setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
+                    executionException.printStackTrace();
                 } catch (Throwable exc) {
                     response.setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
                     exc.printStackTrace();
