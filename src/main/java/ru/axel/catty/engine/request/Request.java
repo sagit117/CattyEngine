@@ -171,8 +171,8 @@ public final class Request implements IHttpCattyRequest {
     }
 
     @Override
-    public String getPath() {
-        return path;
+    public Optional<String> getPath() {
+        return Optional.ofNullable(path);
     }
     @Override
     public String getMethod() {

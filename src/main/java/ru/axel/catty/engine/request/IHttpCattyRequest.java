@@ -30,7 +30,7 @@ public interface IHttpCattyRequest {
      */
     void handle(IHttpCattyResponse response) throws IOException, URISyntaxException;
 
-    String getPath();
+    Optional<String> getPath();
     String getMethod();
     String getVersion();
     @Nullable String getCookie(String name);

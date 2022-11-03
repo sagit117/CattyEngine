@@ -53,7 +53,7 @@ public class Main {
         });
 
         final ICattyRoute routeTest = new Route("/test", "GET", (request, response) -> {
-            logger.finest("Request path: " + request.getPath());
+            logger.finest("Request path: " + request.getPath().orElseThrow());
             logger.finest("Params: " + request.getQueryParam("test"));
 
             logger.finest("ID request: " + request.getParams("REQUEST_ID"));
@@ -79,7 +79,7 @@ public class Main {
         });
 
         final ICattyRoute routeParams = new Route("/params/{id}/get", "GET", (request, response) -> {
-            logger.finest("Request path: " + request.getPath());
+            logger.finest("Request path: " + request.getPath().orElseThrow());
             logger.finest("Params id: " + request.getParams("id"));
 
             if (Objects.equals(request.getParams("id"), "1")) {

@@ -67,7 +67,7 @@ public class Routing implements IRouting {
     @Override
     public void staticFiles(URL pathFiles, String path) {
         addRoute(path + "/*", "GET", (request, response) -> {
-            final String[] pathSplit = request.getPath().split("/");
+            final String[] pathSplit = request.getPath().orElseThrow().split("/");
             final String fileName = pathSplit[pathSplit.length - 1];
             final FileLoader file = new FileLoader(pathFiles.toString() + "/" + fileName);
 
@@ -86,7 +86,9 @@ public class Routing implements IRouting {
         addRoute(path + "/*", "GET", (request, response) -> {
             final var file = new FileLoader(
                 Objects.requireNonNull(
-                    Routing.class.getResource(path + request.getPath().replace(path, ""))
+                    Routing.class.getResource(
+                        path + request.getPath().orElseThrow().replace(path, "")
+                    )
                 )
             );
 
@@ -103,9 +105,9 @@ public class Routing implements IRouting {
      */
     @Override
     public Optional<ICattyRoute> takeRoute(@NotNull IHttpCattyRequest request) {
-        return Optional.ofNullable(
-            priorityRoute(getRoutesByPath(request.getPath(), request.getMethod()))
-        );
+        return request.getPath().isPresent() ? Optional.ofNullable(
+            priorityRoute(getRoutesByPath(request.getPath().get(), request.getMethod()))
+        ) : Optional.empty();
     }
 
     /**

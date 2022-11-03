@@ -14,7 +14,7 @@ public class ParametersFromRoute implements RouteExecute {
     public void exec(
         @NotNull IHttpCattyRequest request,
         IHttpCattyResponse response
-    ) throws NullPointerException {
+    ) {
         final ICattyRoute route = request.getRoute().orElseThrow();
         final String[] splitRoute = route.getPath().split("/");
         final Matcher matcherAllRouteString = RegexPatterns.getParametersFromRoutePath(route.getPath());
@@ -24,9 +24,9 @@ public class ParametersFromRoute implements RouteExecute {
             for (String part : splitRoute) {
                 final Matcher matcher = RegexPatterns.getParametersFromRoutePath(part);
 
-                if (matcher.find()) {
+                if (matcher.find() && request.getPath().isPresent()) {
                     final String paramsName = matcher.group(1);
-                    final String paramsValue = request.getPath().split("/")[index];
+                    final String paramsValue = request.getPath().get().split("/")[index];
 
                     request.setParams(paramsName, paramsValue);
                 }
