@@ -1,6 +1,7 @@
 package ru.axel.catty.engine.request;
 
 import org.jetbrains.annotations.Nullable;
+import ru.axel.catty.engine.headers.Headers;
 import ru.axel.catty.engine.response.IHttpCattyResponse;
 import ru.axel.catty.engine.routing.ICattyRoute;
 
@@ -35,6 +36,7 @@ public interface IHttpCattyRequest {
     String getVersion();
     @Nullable String getCookie(String name);
     @Nullable String getHeaders(String name);
+    @Nullable String getHeaders(Headers header);
     @Nullable String getParams(String name);
     String getOriginalRequest();
     String getBody();

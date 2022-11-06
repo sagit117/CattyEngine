@@ -3,6 +3,7 @@ package ru.axel.catty.engine.request;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.axel.catty.engine.headers.Headers;
 import ru.axel.catty.engine.response.IHttpCattyResponse;
 import ru.axel.catty.engine.routing.ICattyRoute;
 
@@ -190,6 +191,12 @@ public final class Request implements IHttpCattyRequest {
     public @Nullable String getHeaders(String name) {
         return headers.getOrDefault(name, null);
     }
+    @Contract(pure = true)
+    @Override
+    public @Nullable String getHeaders(@NotNull Headers header) {
+        return headers.getOrDefault(header.getHeaderName(), "");
+    }
+
     @Override
     public @Nullable String getParams(String name) {
         return params.getOrDefault(name, null);
