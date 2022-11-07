@@ -10,10 +10,7 @@ import ru.axel.catty.engine.routing.ICattyRoute;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +22,7 @@ public final class Request implements IHttpCattyRequest {
     private final Logger logger;
     private final HashMap<String, String> headers = new HashMap<>();
     private final HashMap<String, String> cookie = new HashMap<>();
-    private final HashMap<String, String> params = new HashMap<>();         // параметры из пути маршрута
+    private final HashMap<String, Object> params = new HashMap<>();         // параметры из пути маршрута
     private final HashMap<String, String> queryParams = new HashMap<>();    // параметры запроса
     private final String originalRequest;
     private String body;
@@ -175,18 +172,22 @@ public final class Request implements IHttpCattyRequest {
     public Optional<String> getPath() {
         return Optional.ofNullable(path);
     }
+
     @Override
     public String getMethod() {
         return method;
     }
+
     @Override
     public String getVersion() {
         return version;
     }
+
     @Override
     public @Nullable String getCookie(String name) {
         return cookie.getOrDefault(name, null);
     }
+
     @Override
     public @Nullable String getHeaders(String name) {
         return headers.getOrDefault(name, null);
@@ -197,26 +198,36 @@ public final class Request implements IHttpCattyRequest {
         return headers.getOrDefault(header.getHeaderName(), "");
     }
 
+    /**
+     * Метод вернет параметр запроса, которым наполняется запрос по мере похождения через конвейер.
+     * @param name имя параметра.
+     * @return объект параметра запроса.
+     */
     @Override
-    public @Nullable String getParams(String name) {
+    public @Nullable Object getParams(String name) {
         return params.getOrDefault(name, null);
     }
+
     @Override
     public String getOriginalRequest() {
         return originalRequest;
     }
+
     @Override
     public String getBody() {
         return body;
     }
+
     @Override
     public String getQueryParam(String name) {
         return queryParams.get(name);
     }
+
     @Override
     public Optional<ICattyRoute> getRoute() {
         return Optional.ofNullable(route);
     }
+
     /**
      * Метод возвращает объект данных клиента
      *

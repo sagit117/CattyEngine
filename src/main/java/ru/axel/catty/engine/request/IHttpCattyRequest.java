@@ -7,6 +7,7 @@ import ru.axel.catty.engine.routing.ICattyRoute;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Objects;
 import java.util.Optional;
 
 public interface IHttpCattyRequest {
@@ -37,7 +38,13 @@ public interface IHttpCattyRequest {
     @Nullable String getCookie(String name);
     @Nullable String getHeaders(String name);
     @Nullable String getHeaders(Headers header);
-    @Nullable String getParams(String name);
+
+    /**
+     * Метод вернет параметр запроса, которым наполняется запрос по мере похождения через конвейер.
+     * @param name имя параметра.
+     * @return объект параметра запроса.
+     */
+    @Nullable Object getParams(String name);
     String getOriginalRequest();
     String getBody();
     String getQueryParam(String name);
