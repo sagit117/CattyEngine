@@ -16,7 +16,7 @@ public interface IHttpCattyRequest {
      * @param name имя параметра
      * @param value значение параметра
      */
-    void setParams(String name, String value);
+    void setParams(String name, Object value);
 
     /**
      * Метод добавляет объект маршрута.

@@ -140,7 +140,7 @@ public final class Request implements IHttpCattyRequest {
      * @param value значение параметра
      */
     @Override
-    public void setParams(String name, String value) {
+    public void setParams(String name, Object value) {
         params.put(name, value);
     }
 
