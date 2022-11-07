@@ -203,9 +203,10 @@ public final class Request implements IHttpCattyRequest {
      * @param name имя параметра.
      * @return объект параметра запроса.
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public @Nullable Object getParams(String name) {
-        return params.getOrDefault(name, null);
+    public @Nullable <T> T getParams(String name) {
+        return (T) params.getOrDefault(name, null);
     }
 
     @Override

@@ -44,7 +44,7 @@ public interface IHttpCattyRequest {
      * @param name имя параметра.
      * @return объект параметра запроса.
      */
-    @Nullable Object getParams(String name);
+    @Nullable <T> T getParams(String name);
     String getOriginalRequest();
     String getBody();
     String getQueryParam(String name);
