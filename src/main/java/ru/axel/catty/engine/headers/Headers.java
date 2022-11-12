@@ -8,7 +8,8 @@ public enum Headers implements IHeaders {
     CONTENT_LENGTH  ("Content-Length"),
     ACCEPT_ENCODING ("Accept-Encoding"),
     CONTENT_ENCODING("Content-encoding"),
-    SET_COOKIE("Set-Cookie");
+    SET_COOKIE      ("Set-Cookie"),
+    ALLOW           ("Allow");
 
     private final String headerName;
 
