@@ -168,4 +168,9 @@ public class Response implements IHttpCattyResponse {
     public void setCookie(@NotNull ISetCookie cookie) {
         addHeader(Headers.SET_COOKIE, cookie.toString());
     }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 }

@@ -238,4 +238,9 @@ public final class Request implements IHttpCattyRequest {
     public IClientInfo getClientInfo() {
         return client;
     }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 }

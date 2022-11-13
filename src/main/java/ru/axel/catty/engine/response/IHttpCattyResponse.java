@@ -6,6 +6,7 @@ import ru.axel.catty.engine.headers.IHeaders;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.logging.Logger;
 
 public interface IHttpCattyResponse {
     /**
@@ -78,4 +79,6 @@ public interface IHttpCattyResponse {
      * @param cookie объект хранения куки.
      */
     void setCookie(ISetCookie cookie);
+
+    Logger getLogger();
 }

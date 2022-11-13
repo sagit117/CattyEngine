@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 public interface IHttpCattyRequest {
     /**
@@ -55,4 +56,6 @@ public interface IHttpCattyRequest {
      * @return объект данных клиента
      */
     IClientInfo getClientInfo();
+
+    Logger getLogger();
 }
