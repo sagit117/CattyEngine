@@ -160,6 +160,18 @@ public class Response implements IHttpCattyResponse {
         setBody(body);
     }
 
+    @Override
+    public void redirect(String path, boolean isPermanently) {
+        setResponseCode(isPermanently ? ResponseCode.MOVED_PERMANENTLY : ResponseCode.FOUND);
+        addHeader(Headers.LOCATION.getHeaderName(), path);
+    }
+    @Override
+    public void redirect(String path, boolean isPermanently, byte[] body) {
+        setResponseCode(isPermanently ? ResponseCode.MOVED_PERMANENTLY : ResponseCode.FOUND);
+        addHeader(Headers.LOCATION.getHeaderName(), path);
+        setBody(body);
+    }
+
     /**
      * Метод устанавливает в заголовок куки.
      * @param cookie объект хранения куки.

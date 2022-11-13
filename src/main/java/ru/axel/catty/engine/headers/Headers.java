@@ -9,7 +9,9 @@ public enum Headers implements IHeaders {
     ACCEPT_ENCODING ("Accept-Encoding"),
     CONTENT_ENCODING("Content-encoding"),
     SET_COOKIE      ("Set-Cookie"),
-    ALLOW           ("Allow");
+    ALLOW           ("Allow"),
+    LOCATION        ("Location"),
+    ;
 
     private final String headerName;
 

@@ -74,6 +74,8 @@ public interface IHttpCattyResponse {
     void respond(ResponseCode code, String body) throws IOException;
     void respond(ResponseCode code, byte[] body);
 
+    void redirect(String path, boolean isPermanently);
+    void redirect(String path, boolean isPermanently, byte[] body);
     /**
      * Метод устанавливает в заголовок куки.
      * @param cookie объект хранения куки.

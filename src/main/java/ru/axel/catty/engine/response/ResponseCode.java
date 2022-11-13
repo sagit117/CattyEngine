@@ -7,10 +7,12 @@ import org.jetbrains.annotations.NotNull;
  * Код ответа сервера.
  */
 public enum ResponseCode {
-    OK(200),
-    BAD_REQUEST(400),
-    NOT_FOUND(404),
-    INTERNAL_SERVER_ERROR(500),
+    OK                      (200),
+    MOVED_PERMANENTLY       (301),
+    FOUND                   (302),
+    BAD_REQUEST             (400),
+    NOT_FOUND               (404),
+    INTERNAL_SERVER_ERROR   (500),
     ;
 
     final int code;
