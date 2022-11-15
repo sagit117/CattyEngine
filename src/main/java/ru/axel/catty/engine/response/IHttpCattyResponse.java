@@ -71,7 +71,7 @@ public interface IHttpCattyResponse {
      * @return буффер байтов ответа.
      * @throws IOException ошибка записи байт в поток.
      */
-    void respond(ResponseCode code, String body) throws IOException;
+    void respond(ResponseCode code, String body);
     void respond(ResponseCode code, byte[] body);
 
     void redirect(String path, boolean isPermanently);
