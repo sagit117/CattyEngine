@@ -161,7 +161,6 @@ public final class Request implements IHttpCattyRequest {
 
     /**
      * Метод добавляет в запрос ошибку обработки запроса.
-     *
      * @param exception ошибка
      */
     @Override
@@ -171,12 +170,18 @@ public final class Request implements IHttpCattyRequest {
 
     /**
      * Метод выполняет обработчик маршрута, который заложен в объекте маршрута.
-     *
      * @param response объект ответа.
      */
     @Override
     public void handle(IHttpCattyResponse response) throws IOException, URISyntaxException {
-        getRoute().orElseThrow().handle(this, response);
+        try {
+            getRoute().orElseThrow().handle(this, response);
+        } catch (Exception ex) {
+            this.addException(ex);
+            logger.severe("Ошибка в обработке маршрута(метод handle): " + ex.getLocalizedMessage());
+
+            throw ex;
+        }
     }
 
     @Override
@@ -242,7 +247,6 @@ public final class Request implements IHttpCattyRequest {
 
     /**
      * Метод возвращает объект данных клиента
-     *
      * @return объект данных клиента
      */
     @Override
@@ -257,7 +261,6 @@ public final class Request implements IHttpCattyRequest {
 
     /**
      * Получить все ошибки запроса, возникшие в ходе его обработки.
-     *
      * @return список ошибок
      */
     @SuppressWarnings("unchecked")
