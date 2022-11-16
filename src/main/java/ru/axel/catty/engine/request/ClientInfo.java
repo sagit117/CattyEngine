@@ -2,12 +2,13 @@ package ru.axel.catty.engine.request;
 
 import ru.axel.catty.engine.utilites.RegexPatterns;
 
+import java.io.Serializable;
 import java.net.SocketAddress;
 import java.util.regex.Matcher;
 
 import static java.lang.Integer.parseInt;
 
-public class ClientInfo implements IClientInfo {
+public class ClientInfo implements IClientInfo, Serializable {
     private final SocketAddress local;
     private final SocketAddress remote;
 
@@ -59,5 +60,10 @@ public class ClientInfo implements IClientInfo {
         }
 
         return -1;
+    }
+
+    @Override
+    public String toString() {
+        return "{ local: " + local + ", remote: " + remote + " }";
     }
 }
