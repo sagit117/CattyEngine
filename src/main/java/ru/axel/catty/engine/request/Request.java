@@ -31,6 +31,7 @@ public final class Request implements IHttpCattyRequest {
     private String version;
     private ICattyRoute route;
     private IClientInfo client;
+    private final ArrayList<Exception> exceptions = new ArrayList<>();
 
     /**
      * Создание экземпляра.
@@ -159,6 +160,16 @@ public final class Request implements IHttpCattyRequest {
     }
 
     /**
+     * Метод добавляет в запрос ошибку обработки запроса.
+     *
+     * @param exception ошибка
+     */
+    @Override
+    public void addException(Exception exception) {
+        exceptions.add(exception);
+    }
+
+    /**
      * Метод выполняет обработчик маршрута, который заложен в объекте маршрута.
      *
      * @param response объект ответа.
@@ -242,5 +253,16 @@ public final class Request implements IHttpCattyRequest {
     @Override
     public Logger getLogger() {
         return logger;
+    }
+
+    /**
+     * Получить все ошибки запроса, возникшие в ходе его обработки.
+     *
+     * @return список ошибок
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public ArrayList<Exception> getExceptionList() {
+        return (ArrayList<Exception>) exceptions.clone();
     }
 }

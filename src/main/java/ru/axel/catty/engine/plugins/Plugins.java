@@ -36,6 +36,8 @@ public class Plugins extends Conveyor<String, RouteExecute> implements RouteExec
                 executor.exec(request, response);
             } catch (IOException | URISyntaxException e) {
                 logger.throwing(Plugins.class.getName(), "exec", e);
+                request.addException(e);
+
                 e.printStackTrace();
             }
         });

@@ -7,7 +7,7 @@ import ru.axel.catty.engine.routing.ICattyRoute;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Objects;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -26,6 +26,12 @@ public interface IHttpCattyRequest {
     void setRoute(ICattyRoute originalRoute);
 
     void setClientInfo(IClientInfo clientInfo);
+
+    /**
+     * Метод добавляет в запрос ошибку обработки запроса.
+     * @param exception ошибка
+     */
+    void addException(Exception exception);
 
     /**
      *  Метод выполняет обработчик маршрута, который заложен в объекте маршрута.
@@ -58,4 +64,10 @@ public interface IHttpCattyRequest {
     IClientInfo getClientInfo();
 
     Logger getLogger();
+
+    /**
+     * Получить все ошибки запроса, возникшие в ходе его обработки.
+     * @return список ошибок
+     */
+    ArrayList<Exception> getExceptionList();
 }
