@@ -94,6 +94,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
             try {
                 client.write(responseBuffer(buffer), attachment, this);
             } catch (Throwable exc) {
+                logger.severe("Ошибка записи ответа в канал клиента: " + exc.getLocalizedMessage());
                 failed(exc, attachment);
             }
         } else if (action.equals(ClientActions.SEND)) {
@@ -102,7 +103,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
 
             try {
                 client.close();
-                logger.finest("Client is close");
+                logger.finest("Клиент закрыт штатно");
             } catch (IOException e) {
                 failed(e, attachment);
             }
@@ -125,6 +126,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
 
         try {
             client.close();
+            logger.finest("Клиент закрыт с ошибкой");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
