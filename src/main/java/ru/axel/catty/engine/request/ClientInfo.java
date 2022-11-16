@@ -64,6 +64,6 @@ public class ClientInfo implements IClientInfo, Serializable {
 
     @Override
     public String toString() {
-        return "{ local: " + local + ", remote: " + remote + " }";
+        return "{ local: \"" + local + "\", remote: \"" + remote + "\" }";
     }
 }
