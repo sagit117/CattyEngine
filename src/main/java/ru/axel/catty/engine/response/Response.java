@@ -20,6 +20,7 @@ public class Response implements IHttpCattyResponse {
     private final HashMap<String, String> headers = new HashMap<>();
     private byte[] body;
     private int responseCode;
+    private final String httpVersion = "HTTP/1.1";
 
     public Response(Logger loggerInstance) {
         logger = loggerInstance;
@@ -32,7 +33,7 @@ public class Response implements IHttpCattyResponse {
     private @NotNull String getHeadResponse() {
         final StringBuilder responseLines = new StringBuilder();
 
-        responseLines.append("HTTP/1.1 ").append(responseCode).append("\r\n");
+        responseLines.append(httpVersion).append(" ").append(responseCode).append("\r\n");
         headers.forEach((key, value) -> {
             responseLines.append(key).append(": ").append(value).append("\r\n");
         });

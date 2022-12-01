@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 
 public class Main {
     static {
-        MiniLogger.setLogLevel(Level.CONFIG);
+        MiniLogger.setLogLevel(Level.ALL);
     }
 
     private static final Logger logger = MiniLogger.getLogger(Main.class);
@@ -42,7 +42,7 @@ public class Main {
         plugins.addPipelines("default headers", (request, response) -> {
             response.addHeader(Headers.DATE, String.valueOf(new Date()));
             response.addHeader(Headers.SERVER, "Catty");
-            response.addHeader(Headers.CONNECTION, "close");
+//            response.addHeader(Headers.CONNECTION, "close");
         });
 
         plugins.addPipelines("request id", (request, response) -> {

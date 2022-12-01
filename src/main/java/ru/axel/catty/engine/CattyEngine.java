@@ -110,11 +110,13 @@ public final class CattyEngine implements ICattyEngine {
             @Override
             public void completed(final AsynchronousSocketChannel client, final Object attachment) {
                 if (server.isOpen()) { // если удалить условия не будет параллелизма в запросах
+                    logger.finest("Server is open");
                     server.accept(null, this);
                 }
 
                 if (client != null && client.isOpen()) {
-                    logger.finest("Server accept: " + client);
+                    logger.finest("Server accept client: " + client);
+                    logger.finest("Client hash: " + client.hashCode());
                     final ByteBuffer buffer = ByteBuffer.allocate(buffer_size);
 
                     final Map<String, Object> readInfo = new HashMap<>();
