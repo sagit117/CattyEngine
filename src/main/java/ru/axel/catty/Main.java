@@ -42,6 +42,8 @@ public class Main {
         plugins.addPipelines("default headers", (request, response) -> {
             response.addHeader(Headers.DATE, String.valueOf(new Date()));
             response.addHeader(Headers.SERVER, "Catty");
+            response.addHeader(Headers.CONNECTION, "keep-alive");
+            response.addHeader(Headers.KEEP_ALIVE, "timeout=5, max=1000");
 //            response.addHeader(Headers.CONNECTION, "close");
         });
 

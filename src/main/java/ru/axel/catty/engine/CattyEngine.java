@@ -165,7 +165,7 @@ public final class CattyEngine implements ICattyEngine {
      * resource as closed, prior to throwing the exception. The {@code
      * close} method is unlikely to be invoked more than once and so
      * this ensures that the resources are released in a timely manner.
-     * Furthermore it reduces problems that could arise when the resource
+     * Furthermore, it reduces problems that could arise when the resource
      * wraps, or is wrapped, by another resource.
      *
      * <p><em>Implementers of this interface are also strongly advised

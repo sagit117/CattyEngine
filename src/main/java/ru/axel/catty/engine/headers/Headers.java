@@ -11,6 +11,7 @@ public enum Headers implements IHeaders {
     SET_COOKIE      ("Set-Cookie"),
     ALLOW           ("Allow"),
     LOCATION        ("Location"),
+    KEEP_ALIVE      ("Keep-Alive"),
     ;
 
     private final String headerName;
