@@ -17,7 +17,7 @@ dependencies {
     implementation(
         files(
             "libs/logger-1.0.0.jar",
-            "libs/FileLoader-1.0.3.jar",
+            "libs/FileLoader-1.0.4.jar",
             "libs/Conveyor-1.0.3.jar"
         )
     )
