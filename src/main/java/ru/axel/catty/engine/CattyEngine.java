@@ -3,11 +3,11 @@ package ru.axel.catty.engine;
 import org.jetbrains.annotations.NotNull;
 import ru.axel.catty.engine.handler.ClientActions;
 import ru.axel.catty.engine.handler.IQueryHandler;
-import ru.axel.logger.MiniLogger;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -24,13 +26,14 @@ import java.util.logging.Logger;
  * Движок ничего не знает об обработки ответа или запроса, за это отвечает класс в параметрах конструктора handler.
  */
 public final class CattyEngine implements ICattyEngine {
-    private static Logger logger = MiniLogger.getLogger(CattyEngine.class);
+    private static Logger logger = Logger.getLogger(CattyEngine.class.getName());
     private final InetSocketAddress hostAddress;
     private final ExecutorService pool;
     private final int buffer_size = 16_384; // 16kb
     private volatile boolean stop = false;
     private final IQueryHandler queryHandler;
     private final int limitAllocateBufferForRequest; // максимальный размер буфера для принятия запроса
+    private long timeToReadBuffer = 5L; // время ожидания чтения из буфера запроса
     private AsynchronousChannelGroup group;
 
     /**
@@ -74,8 +77,18 @@ public final class CattyEngine implements ICattyEngine {
      * Метод устанавливает логгер.
      * @param loggerInstance объект логгера.
      */
+    @Override
     public void setLogger(Logger loggerInstance) {
         logger = loggerInstance;
+    }
+
+    /**
+     * Устанавливает время ожидания чтения из буфера запроса
+     * @param timeSeconds - время в секундах
+     */
+    @Override
+    public void setTimeToReadBuffer(Long timeSeconds) {
+        timeToReadBuffer = timeSeconds;
     }
 
     /**
@@ -108,26 +121,34 @@ public final class CattyEngine implements ICattyEngine {
     private void loop(final @NotNull AsynchronousServerSocketChannel server) {
         server.accept(null, new CompletionHandler<>() {
             @Override
-            public void completed(final AsynchronousSocketChannel client, final Object attachment) {
+            public void completed(final AsynchronousSocketChannel clientChannel, final Object attachment) {
+                try {
+                    clientChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
                 if (server.isOpen()) { // если удалить условия не будет параллелизма в запросах
-                    logger.finest("Server is open");
+                    if (logger.isLoggable(Level.FINEST)) logger.finest("Server is accepted");
                     server.accept(null, this);
                 }
 
-                if (client != null && client.isOpen()) {
-                    logger.finest("Server accept client: " + client);
-                    logger.finest("Client hash: " + client.hashCode());
+                if (clientChannel.isOpen()) {
+                    if (logger.isLoggable(Level.FINEST)) logger.finest("Server accept client: " + clientChannel);
+
                     final ByteBuffer buffer = ByteBuffer.allocate(buffer_size);
 
                     final Map<String, Object> readInfo = new HashMap<>();
                     readInfo.put("action", ClientActions.READ);
                     readInfo.put("buffer", buffer);
 
-                    client.read(
+                    clientChannel.read(
                         buffer,
+                        timeToReadBuffer,
+                        TimeUnit.SECONDS,
                         readInfo,
                         queryHandler.getHandler(
-                            client,
+                            clientChannel,
                             limitAllocateBufferForRequest,
                             logger
                         )

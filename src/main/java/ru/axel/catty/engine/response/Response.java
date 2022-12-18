@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -85,12 +86,12 @@ public class Response implements IHttpCattyResponse {
     @Override
     public void setResponseCode(@NotNull ResponseCode code) {
         responseCode = code.getCode();
-        logger.finest("Установлен код ответа: " + code);
+        if (logger.isLoggable(Level.FINEST)) logger.finest("Установлен код ответа: " + code);
     }
     @Override
     public void setResponseCode(int code) {
         responseCode = code;
-        logger.finest("Установлен код ответа: " + code);
+        if (logger.isLoggable(Level.FINEST)) logger.finest("Установлен код ответа: " + code);
     }
 
     /**

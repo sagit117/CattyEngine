@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
@@ -24,7 +25,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
         limitAllocateBufferForRequest = limitBuffer;
         logger = loggerInstance;
 
-        logger.finest("Handler create with client: " + clientChannel);
+        if (logger.isLoggable(Level.FINEST)) logger.finest("Handler create with client: " + clientChannel);
     }
 
     /**
@@ -80,12 +81,9 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
                 completed(result, attachment);
             }
         } else if (action.equals(ClientActions.WRITE)) {
-//            logger.severe("Action: " + action.name());
-
             final var buffer = attachment.containsKey("newBuffer")
                 ? (ByteBuffer) attachment.get("newBuffer")
                 : (ByteBuffer) attachment.get("buffer");
-//            logger.severe("Получено сообщение: " + new String(buffer.array()).trim());
 
             attachment.put("action", ClientActions.SEND);
 
@@ -96,18 +94,18 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
                 failed(exc, attachment);
             }
         } else if (action.equals(ClientActions.SEND)) {
-            logger.finest("Action: " + action.name());
+            if (logger.isLoggable(Level.FINEST)) logger.finest("Action: " + action.name());
             attachment.put("action", ClientActions.READ);
 
             try {
-//                client.close();
                 client.shutdownOutput();
-                logger.finest("Клиент закрыт штатно");
+
+                if (logger.isLoggable(Level.FINEST)) logger.finest("Send is completed");
             } catch (IOException e) {
                 failed(e, attachment);
             }
         } else {
-            logger.finest("Client without attachment action: " + client);
+            if (logger.isLoggable(Level.FINEST)) logger.finest("Client without attachment action: " + client);
         }
     }
 
@@ -125,7 +123,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
 
         try {
             client.close();
-            logger.finest("Клиент закрыт с ошибкой");
+            if (logger.isLoggable(Level.FINEST)) logger.finest("Client close with exception");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -164,7 +162,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
 
                 // аллоцируем новый буфер
                 final ByteBuffer newBuffer = ByteBuffer.allocate(newBufferSize);
-                logger.finest("Аллоцирован новый буфер: " + newBufferSize);
+                if (logger.isLoggable(Level.FINEST)) logger.finest("Аллоцирован новый буфер: " + newBufferSize);
 
                 // записываем уже прочитанную информацию
                 newBuffer.put(oldBuffer.array(), 0, oldBuffer.position());
@@ -182,7 +180,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
             newBuffer.put(oldBuffer.array(), 0, oldBuffer.position());
 
             if (matcher.find()) {
-                logger.finest("Конец запроса");
+                if (logger.isLoggable(Level.FINEST)) logger.finest("Конец запроса");
 
                 oldBuffer.clear();
                 attachment.put("finished", true);

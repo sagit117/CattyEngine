@@ -9,6 +9,7 @@ import ru.axel.fileloader.FileLoader;
 
 import java.net.URL;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Routing implements IRouting {
@@ -26,7 +27,9 @@ public class Routing implements IRouting {
     @Override
     public void addRoute(ICattyRoute route) {
         routes.add(route);
-        logger.config("Добавлен маршрут. " + route.getMethod() + ":" + route.getPath());
+        if (logger.isLoggable(Level.CONFIG)) {
+            logger.config("Добавлен маршрут. " + route.getMethod() + ":" + route.getPath());
+        }
     }
     /**
      * Метод добавляет в коллекцию маршрут.
