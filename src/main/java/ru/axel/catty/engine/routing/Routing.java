@@ -108,9 +108,9 @@ public class Routing implements IRouting {
      */
     @Override
     public Optional<ICattyRoute> takeRoute(@NotNull IHttpCattyRequest request) {
-        return request.getPath().isPresent() ? Optional.ofNullable(
-            priorityRoute(getRoutesByPath(request.getPath().get(), request.getMethod()))
-        ) : Optional.empty();
+        return request.getPath().isPresent()
+            ? Optional.ofNullable(priorityRoute(getRoutesByPath(request.getPath().get(), request.getMethod())))
+            : Optional.empty();
     }
 
     /**
