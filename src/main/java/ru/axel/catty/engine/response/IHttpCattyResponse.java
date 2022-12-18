@@ -81,6 +81,7 @@ public interface IHttpCattyResponse {
      * @param cookie объект хранения куки.
      */
     void setCookie(ISetCookie cookie);
+    void setTransformMethod(TransformResponse method);
 
     Logger getLogger();
 }

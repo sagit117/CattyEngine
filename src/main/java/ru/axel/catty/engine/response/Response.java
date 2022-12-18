@@ -22,6 +22,7 @@ public class Response implements IHttpCattyResponse {
     private byte[] body;
     private int responseCode;
     private final String httpVersion = "HTTP/1.1";
+    private TransformResponse transformResponse;
 
     public Response(Logger loggerInstance) {
         logger = loggerInstance;
@@ -63,7 +64,9 @@ public class Response implements IHttpCattyResponse {
      */
     @Override
     public void setBody(@NotNull String bodyString) {
-        final byte[] bytes = bodyString.getBytes(StandardCharsets.UTF_8);
+        final byte[] bytes = transformResponse == null
+            ? bodyString.getBytes(StandardCharsets.UTF_8)
+            : transformResponse.transform(bodyString.getBytes(StandardCharsets.UTF_8));
 
         addHeader(Headers.CONTENT_LENGTH, String.valueOf(bytes.length));
         body = bytes;
@@ -76,7 +79,9 @@ public class Response implements IHttpCattyResponse {
     @Override
     public void setBody(byte @NotNull [] bodyBytes) {
         addHeader(Headers.CONTENT_LENGTH, String.valueOf(bodyBytes.length));
-        body = bodyBytes;
+        body = transformResponse == null
+            ? bodyBytes
+            : transformResponse.transform(bodyBytes);
     }
 
     /**
@@ -181,6 +186,11 @@ public class Response implements IHttpCattyResponse {
     @Override
     public void setCookie(@NotNull ISetCookie cookie) {
         addHeader(Headers.SET_COOKIE, cookie.toString());
+    }
+
+    @Override
+    public void setTransformMethod(TransformResponse method) {
+        transformResponse = method;
     }
 
     @Override
