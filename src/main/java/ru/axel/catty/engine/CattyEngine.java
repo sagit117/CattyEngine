@@ -122,11 +122,11 @@ public final class CattyEngine implements ICattyEngine {
         server.accept(null, new CompletionHandler<>() {
             @Override
             public void completed(final AsynchronousSocketChannel clientChannel, final Object attachment) {
-                try {
-                    clientChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+//                try {
+//                    clientChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
 
                 if (server.isOpen()) { // если удалить условия не будет параллелизма в запросах
                     if (logger.isLoggable(Level.FINEST)) logger.finest("Server is accepted");

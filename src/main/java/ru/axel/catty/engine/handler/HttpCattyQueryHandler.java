@@ -98,7 +98,8 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
             attachment.put("action", ClientActions.READ);
 
             try {
-                client.shutdownOutput();
+//                client.shutdownOutput();
+                client.close();
 
                 if (logger.isLoggable(Level.FINEST)) logger.finest("Send is completed");
             } catch (IOException e) {

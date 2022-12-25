@@ -39,7 +39,8 @@ public class Routing implements IRouting {
      */
     @Override
     public void addRoute(String path, String method, RouteExecute handler) {
-        routes.add(new Route(path, method, handler));
+        final ICattyRoute route = new Route(path, method, handler);
+        addRoute(route);
     }
 
     /**
@@ -75,7 +76,7 @@ public class Routing implements IRouting {
             final FileLoader file = new FileLoader(pathFiles.toString() + "/" + fileName);
 
             response.setResponseCode(ResponseCode.OK);
-            response.addHeader(Headers.CONTENT_TYPE, file.getMineFile() + "; charset=UTF-8");
+            response.addHeader(Headers.CONTENT_TYPE, file.getMineFile() + "; charset=utf-8");
             response.setBody(file.getBytes());
         });
     }
@@ -90,13 +91,17 @@ public class Routing implements IRouting {
             final var file = new FileLoader(
                 Objects.requireNonNull(
                     Routing.class.getResource(
-                        path + request.getPath().orElseThrow().replace(path, "")
+                        request.getPath().orElseThrow()
                     )
                 )
             );
 
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("Отдан статический файл: " + request.getPath().get());
+            }
+
             response.setResponseCode(ResponseCode.OK);
-            response.addHeader(Headers.CONTENT_TYPE, file.getMineFile() + "; charset=UTF-8");
+            response.addHeader(Headers.CONTENT_TYPE, file.getMineFile() + "; charset=utf-8");
             response.setBody(file.getBytes());
         });
     }

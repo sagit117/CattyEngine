@@ -44,9 +44,9 @@ public class TestMain {
         plugins.addPipelines("default headers", (request, response) -> {
             response.addHeader(Headers.DATE, String.valueOf(new Date()));
             response.addHeader(Headers.SERVER, "Catty");
-            response.addHeader(Headers.CONNECTION, "keep-alive");
-            response.addHeader(Headers.KEEP_ALIVE, "timeout=5, max=100");
-//            response.addHeader(Headers.CONNECTION, "close");
+//            response.addHeader(Headers.CONNECTION, "keep-alive");
+//            response.addHeader(Headers.KEEP_ALIVE, "timeout=5, max=100");
+            response.addHeader(Headers.CONNECTION, "close");
         });
 
         plugins.addPipelines("request id", (request, response) -> {
@@ -67,18 +67,8 @@ public class TestMain {
                 <html>
                 <head>
                     <title>Status</title>
-                    <link rel="stylesheet" type="text/css" href="/static/index.css">
-                    <link rel="stylesheet" type="text/css" href="/static/index1.css">
-                    <link rel="stylesheet" type="text/css" href="/static/index2.css">
-                    <link rel="stylesheet" type="text/css" href="/static/index3.css">
-                    <link rel="stylesheet" type="text/css" href="/static/index4.css">
-                    <link rel="stylesheet" type="text/css" href="/static/index5.css">
-                    <link rel="stylesheet" type="text/css" href="/static/index6.css">
-                    <link rel="stylesheet" type="text/css" href="/static/index7.css">
-                    <link rel="stylesheet" type="text/css" href="/static/index8.css">
-                    <link rel="stylesheet" type="text/css" href="/static/index9.css">
-                    <link rel="stylesheet" type="text/css" href="/static/index10.css">
-                    <link rel="stylesheet" type="text/css" href="/static/index11.css">
+                    <meta charset="UTF-8">
+                    <link rel="stylesheet" type="text/css" href="/static/styles/index.css">
     
                 </head>
                 <body>
@@ -90,7 +80,7 @@ public class TestMain {
                 </body>
             """;
 
-            response.addHeader(Headers.CONTENT_TYPE, "text/html; charset=UTF-8");
+            response.addHeader(Headers.CONTENT_TYPE, "text/html; charset=utf-8");
             response.respond(ResponseCode.OK, body);
         });
 
@@ -171,10 +161,10 @@ public class TestMain {
         routing.staticResourceFiles("/static");
 
         try(final ICattyEngine engine = new CattyEngine(
-                new InetSocketAddress(8080),
-                1,
-                5000000,
-                TestMain.Handler::new
+            new InetSocketAddress(8080),
+            1,
+            5000000,
+            TestMain.Handler::new
         )) {
             engine.setLogger(logger);
             engine.startServer();
@@ -205,16 +195,16 @@ public class TestMain {
                         plugins.exec(request, response);
 
                         CompletableFuture
-                                .runAsync(() -> {
-                                    try {
-                                        request.handle(response);
-                                    } catch (IOException | URISyntaxException e) {
-                                        response.setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
-                                        e.printStackTrace();
-                                    }
-                                }, Executors.newWorkStealingPool(1))
-                                .orTimeout(answerTimeout, TimeUnit.SECONDS)
-                                .get();
+                            .runAsync(() -> {
+                                try {
+                                    request.handle(response);
+                                } catch (IOException | URISyntaxException e) {
+                                    response.setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
+                                    e.printStackTrace();
+                                }
+                            }, Executors.newWorkStealingPool(1))
+                            .orTimeout(answerTimeout, TimeUnit.SECONDS)
+                            .get();
                     } else {
                         response.setResponseCode(ResponseCode.NOT_FOUND);
                     }
