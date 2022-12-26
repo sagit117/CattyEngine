@@ -46,7 +46,7 @@ public class TestMain {
             response.addHeader(Headers.SERVER, "Catty");
 //            response.addHeader(Headers.CONNECTION, "keep-alive");
 //            response.addHeader(Headers.KEEP_ALIVE, "timeout=5, max=100");
-            response.addHeader(Headers.CONNECTION, "close");
+//            response.addHeader(Headers.CONNECTION, "close");
         });
 
         plugins.addPipelines("request id", (request, response) -> {

@@ -124,7 +124,7 @@ public class Response implements IHttpCattyResponse {
 
             if (body != null && body.length > 0) outputStream.write(body);
 
-            System.out.println(new String(outputStream.toByteArray()));
+//            System.out.println(new String(outputStream.toByteArray()));
 
             return outputStream.toByteArray();
         } catch (Throwable exc) {

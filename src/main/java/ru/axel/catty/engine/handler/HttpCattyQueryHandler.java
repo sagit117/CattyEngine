@@ -60,7 +60,7 @@ public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer
          */
 
         if (action.equals(ClientActions.READ)) {
-//            logger.severe("Action: " + action.name());
+            logger.severe("Action: " + action.name());
             final ByteBuffer buffer = (ByteBuffer) attachment.get("buffer");
 
             // Если буффер заполнен или выделялся новый буфер(т.е. идет повторное чтение).
