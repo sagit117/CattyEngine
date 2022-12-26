@@ -12,6 +12,7 @@ public enum Headers implements IHeaders {
     ALLOW           ("Allow"),
     LOCATION        ("Location"),
     KEEP_ALIVE      ("Keep-Alive"),
+    VARY            ("Vary"),
     ;
 
     private final String headerName;

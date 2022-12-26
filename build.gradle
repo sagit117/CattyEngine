@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'ru.axel.catty.engine'
-version '1.1.65'
+version '1.1.7'
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -22,7 +22,7 @@ repositories {
 dependencies {
     implementation(
         files(
-            "libs/logger-1.0.0.jar",
+            "libs/logger-1.0.1.jar",
             "libs/FileLoader-1.0.4.jar",
             "libs/Conveyor-1.0.3.jar"
         )
