@@ -42,7 +42,7 @@ public interface IRouting {
      * @param pathFiles путь до файлов статики
      * @param path путь запроса
      */
-    void staticFiles(URL pathFiles, String path);
+    void staticFiles(String pathFiles, String path);
 
     /**
      * Метод создает обработчик для статики из каталога ресурсов

@@ -6,7 +6,6 @@ import ru.axel.catty.engine.headers.Headers;
 import ru.axel.catty.engine.request.IHttpCattyRequest;
 import ru.axel.catty.engine.response.ResponseCode;
 
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -70,12 +69,16 @@ public class Routing implements IRouting {
      * @param path путь запроса
      */
     @Override
-    public void staticFiles(URL pathFiles, String path) {
+    public void staticFiles(String pathFiles, String path) {
         addRoute(path + "/*", "GET", (request, response) -> {
             final String[] pathSplit = request.getPath().orElseThrow().split("/");
             final String fileName = pathSplit[pathSplit.length - 1];
-            final Path pathToFile = Path.of(pathFiles.toString() + "/" + fileName);
+            final Path pathToFile = Path.of(pathFiles + "/" + fileName);
             final String mime = Files.probeContentType(pathToFile);
+
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("Отдан статический файл: " + request.getPath().orElseThrow());
+            }
 
             response.setResponseCode(ResponseCode.OK);
             response.addHeader(Headers.CONTENT_TYPE, mime + "; charset=utf-8");
@@ -90,17 +93,19 @@ public class Routing implements IRouting {
     @Override
     public void staticResourceFiles(String path) {
         addRoute(path + "/*", "GET", (request, response) -> {
+            final String pathRoute = request.getPath().orElseThrow();
+
             final Path pathToFile = Path.of(
                 Objects.requireNonNull(
                     Routing.class.getResource(
-                        request.getPath().orElseThrow()
+                        pathRoute
                     )
                 ).toURI()
             );
             final String mime = Files.probeContentType(pathToFile);
 
             if (logger.isLoggable(Level.FINEST)) {
-                logger.finest("Отдан статический файл: " + request.getPath().get());
+                logger.finest("Отдан статический файл: " + pathRoute);
             }
 
             response.setResponseCode(ResponseCode.OK);
