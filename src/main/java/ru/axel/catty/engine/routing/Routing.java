@@ -5,9 +5,10 @@ import org.jetbrains.annotations.Nullable;
 import ru.axel.catty.engine.headers.Headers;
 import ru.axel.catty.engine.request.IHttpCattyRequest;
 import ru.axel.catty.engine.response.ResponseCode;
-import ru.axel.fileloader.FileLoader;
 
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,7 +66,7 @@ public class Routing implements IRouting {
 
     /**
      * Метод создает обработчик для статики
-     * @param pathFiles путь до файлов статики
+     * @param pathFiles путь до файлов статики(каталог)
      * @param path путь запроса
      */
     @Override
@@ -73,11 +74,12 @@ public class Routing implements IRouting {
         addRoute(path + "/*", "GET", (request, response) -> {
             final String[] pathSplit = request.getPath().orElseThrow().split("/");
             final String fileName = pathSplit[pathSplit.length - 1];
-            final FileLoader file = new FileLoader(pathFiles.toString() + "/" + fileName);
+            final Path pathToFile = Path.of(pathFiles.toString() + "/" + fileName);
+            final String mime = Files.probeContentType(pathToFile);
 
             response.setResponseCode(ResponseCode.OK);
-            response.addHeader(Headers.CONTENT_TYPE, file.getMineFile() + "; charset=utf-8");
-            response.setBody(file.getBytes());
+            response.addHeader(Headers.CONTENT_TYPE, mime + "; charset=utf-8");
+            response.setBody(Files.readAllBytes(pathToFile));
         });
     }
 
@@ -88,21 +90,22 @@ public class Routing implements IRouting {
     @Override
     public void staticResourceFiles(String path) {
         addRoute(path + "/*", "GET", (request, response) -> {
-            final var file = new FileLoader(
+            final Path pathToFile = Path.of(
                 Objects.requireNonNull(
                     Routing.class.getResource(
                         request.getPath().orElseThrow()
                     )
-                )
+                ).toURI()
             );
+            final String mime = Files.probeContentType(pathToFile);
 
             if (logger.isLoggable(Level.FINEST)) {
                 logger.finest("Отдан статический файл: " + request.getPath().get());
             }
 
             response.setResponseCode(ResponseCode.OK);
-            response.addHeader(Headers.CONTENT_TYPE, file.getMineFile() + "; charset=utf-8");
-            response.setBody(file.getBytes());
+            response.addHeader(Headers.CONTENT_TYPE, mime + "; charset=utf-8");
+            response.setBody(Files.readAllBytes(pathToFile));
         });
     }
 
