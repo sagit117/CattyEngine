@@ -71,18 +71,19 @@ public class Routing implements IRouting {
     @Override
     public void staticFiles(String pathFiles, String path) {
         addRoute(path + "/*", "GET", (request, response) -> {
-            final String[] pathSplit = request.getPath().orElseThrow().split("/");
-            final String fileName = pathSplit[pathSplit.length - 1];
-            final Path pathToFile = Path.of(pathFiles + "/" + fileName);
+//            final String[] pathSplit = request.getPath().orElseThrow().split("/");
+//            final String fileName = pathSplit[pathSplit.length - 1];
+            final String fullPathToFile = pathFiles + request.getPath().orElseThrow();
+            final Path pathToFile = Path.of(fullPathToFile.replaceFirst(path, ""));
             final String mime = Files.probeContentType(pathToFile);
-
-            if (logger.isLoggable(Level.FINEST)) {
-                logger.finest("Отдан статический файл: " + request.getPath().orElseThrow());
-            }
 
             response.setResponseCode(ResponseCode.OK);
             response.addHeader(Headers.CONTENT_TYPE, mime + "; charset=utf-8");
             response.setBody(Files.readAllBytes(pathToFile));
+
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("Отдан статический файл: " + request.getPath().orElseThrow());
+            }
         });
     }
 
@@ -104,13 +105,13 @@ public class Routing implements IRouting {
             );
             final String mime = Files.probeContentType(pathToFile);
 
-            if (logger.isLoggable(Level.FINEST)) {
-                logger.finest("Отдан статический файл: " + pathRoute);
-            }
-
             response.setResponseCode(ResponseCode.OK);
             response.addHeader(Headers.CONTENT_TYPE, mime + "; charset=utf-8");
             response.setBody(Files.readAllBytes(pathToFile));
+
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("Отдан статический файл: " + pathRoute);
+            }
         });
     }
 
