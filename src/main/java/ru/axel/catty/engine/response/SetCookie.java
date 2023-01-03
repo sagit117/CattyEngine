@@ -31,6 +31,12 @@ public class SetCookie implements ISetCookie {
         expires = date;
         return this;
     }
+
+    /**
+     * Установить максимальный срок действия куки.
+     * @param age вреия в секундах.
+     * @return объект хранения куки.
+     */
     @Override
     public SetCookie setMaxAge(int age) {
         maxAge = age;
