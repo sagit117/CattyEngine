@@ -169,6 +169,24 @@ public class Response implements IHttpCattyResponse {
         setBody(body);
     }
 
+    /**
+     * Метод объединяет установку кода ответа и тела, а также добавляет заголовок Headers.CONTENT_TYPE, "text/html; charset=utf-8".
+     * @param code код ответа.
+     * @param body тело ответа.
+     */
+    @Override
+    public void respondHTML(ResponseCode code, String body) {
+        addHeader(Headers.CONTENT_TYPE, "text/html; charset=utf-8");
+        setResponseCode(code);
+        setBody(body);
+    }
+    @Override
+    public void respondHTML(ResponseCode code, byte[] body) {
+        addHeader(Headers.CONTENT_TYPE, "text/html; charset=utf-8");
+        setResponseCode(code);
+        setBody(body);
+    }
+
     @Override
     public void redirect(String path, boolean isPermanently) {
         setResponseCode(isPermanently ? ResponseCode.MOVED_PERMANENTLY : ResponseCode.FOUND);

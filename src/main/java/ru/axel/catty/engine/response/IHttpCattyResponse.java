@@ -68,11 +68,17 @@ public interface IHttpCattyResponse {
      * Метод объединяет установку кода ответа и тела.
      * @param code код ответа.
      * @param body тело ответа.
-     * @return буффер байтов ответа.
-     * @throws IOException ошибка записи байт в поток.
      */
     void respond(ResponseCode code, String body);
     void respond(ResponseCode code, byte[] body);
+
+    /**
+     * Метод объединяет установку кода ответа и тела, а также добавляет заголовок Headers.CONTENT_TYPE, "text/html; charset=utf-8".
+     * @param code код ответа.
+     * @param body тело ответа.
+     */
+    void respondHTML(ResponseCode code, String body);
+    void respondHTML(ResponseCode code, byte[] body);
 
     void redirect(String path, boolean isPermanently);
     void redirect(String path, boolean isPermanently, byte[] body);
