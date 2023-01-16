@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +21,7 @@ import java.util.logging.Logger;
 public class Response implements IHttpCattyResponse {
     private final Logger logger;
     private final HashMap<String, String> headers = new HashMap<>();
+    private final List<String> cookies = new ArrayList<>();
     private byte[] body;
     private int responseCode;
     private final String httpVersion = "HTTP/1.1";
@@ -35,10 +38,29 @@ public class Response implements IHttpCattyResponse {
     private @NotNull String getHeadResponse() {
         final StringBuilder responseLines = new StringBuilder();
 
-        responseLines.append(httpVersion).append(" ").append(responseCode).append("\r\n");
-        headers.forEach((key, value) -> {
-            responseLines.append(key).append(": ").append(value).append("\r\n");
-        });
+        /* start line */
+        responseLines
+            .append(httpVersion)
+            .append(" ")
+            .append(responseCode)
+            .append("\r\n");
+
+        /* headers */
+        headers
+            .forEach((key, value) -> responseLines
+                .append(key)
+                .append(": ")
+                .append(value)
+                .append("\r\n"));
+
+        /* cookies */
+        cookies
+            .forEach(cookie -> responseLines
+                .append(Headers.SET_COOKIE)
+                .append(": ")
+                .append(cookie)
+                .append("\r\n"));
+
         responseLines.append("\r\n");
 
         return responseLines.toString();
@@ -205,7 +227,7 @@ public class Response implements IHttpCattyResponse {
      */
     @Override
     public void setCookie(@NotNull ISetCookie cookie) {
-        addHeader(Headers.SET_COOKIE, cookie.toString());
+        cookies.add(cookie.toString());
     }
 
     @Override
