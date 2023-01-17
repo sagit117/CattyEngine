@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'ru.axel.catty.engine'
-version '1.1.9'
+version '1.1.91'
 
 compileJava.options.encoding = 'UTF-8'
 

@@ -13,6 +13,7 @@ public enum Headers implements IHeaders {
     LOCATION        ("Location"),
     KEEP_ALIVE      ("Keep-Alive"),
     VARY            ("Vary"),
+    CACHE_CONTROL   ("Cache-Control"),
     ;
 
     private final String headerName;
