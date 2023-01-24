@@ -84,10 +84,10 @@ public final class Request implements IHttpCattyRequest {
      * @throws RequestBuildException если запрос не соответствует шаблону "Method Path Version".
      */
     private void setStartLine(@NotNull String line) throws RequestBuildException {
-        if (logger.isLoggable(Level.FINEST)) logger.finest("StartLine: " + line);
+//        if (logger.isLoggable(Level.FINEST)) logger.finest("StartLine: " + line);
 
         final String[] starts = line.split(" ");
-        if (starts.length != 3) throw new RequestBuildException("Bad start line");
+        if (starts.length != 3) throw new RequestBuildException("Bad start line: " + line);
 
         method = starts[0];
         setPath(starts[1]);
