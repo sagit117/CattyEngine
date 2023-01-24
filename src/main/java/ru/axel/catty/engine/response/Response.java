@@ -113,12 +113,16 @@ public class Response implements IHttpCattyResponse {
     @Override
     public void setResponseCode(@NotNull ResponseCode code) {
         responseCode = code.getCode();
-        if (logger.isLoggable(Level.FINEST)) logger.finest("Установлен код ответа: " + code);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Установлен код ответа: " + code);
+        }
     }
     @Override
     public void setResponseCode(int code) {
         responseCode = code;
-        if (logger.isLoggable(Level.FINEST)) logger.finest("Установлен код ответа: " + code);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Установлен код ответа: " + code);
+        }
     }
 
     /**
