@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 public interface IQueryHandler {
     CompletionHandler<Integer, Map<String, Object>> getHandler(
         AsynchronousSocketChannel client,
-        int limitAllocateBufferForRequest,
+        long limitAllocateBufferForRequest,
         Logger loggerInstance
     );
 }

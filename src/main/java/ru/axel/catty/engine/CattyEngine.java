@@ -31,7 +31,7 @@ public final class CattyEngine implements ICattyEngine {
     private final int buffer_size = 16_384; // 16kb
     private volatile boolean stop = false;
     private final IQueryHandler queryHandler;
-    private final int limitAllocateBufferForRequest; // максимальный размер буфера для принятия запроса
+    private final long limitAllocateBufferForRequest; // максимальный размер буфера для принятия запроса
     private long timeToReadBuffer = 5L; // время ожидания чтения из буфера запроса
     private AsynchronousChannelGroup group;
 
@@ -45,7 +45,7 @@ public final class CattyEngine implements ICattyEngine {
     public CattyEngine(
         InetSocketAddress hostAddress,
         int poolLimit,
-        int limitAllocateBufferForRequest,
+        long limitAllocateBufferForRequest,
         @NotNull IQueryHandler handler
     ) {
         this.hostAddress = hostAddress;
@@ -63,7 +63,7 @@ public final class CattyEngine implements ICattyEngine {
     public CattyEngine(
         InetSocketAddress hostAddress,
         ExecutorService executor,
-        int limitAllocateBufferForRequest,
+        long limitAllocateBufferForRequest,
         @NotNull IQueryHandler handler
     ) {
         this.hostAddress = hostAddress;

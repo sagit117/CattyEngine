@@ -18,9 +18,9 @@ import java.util.regex.Matcher;
 public abstract class HttpCattyQueryHandler implements CompletionHandler<Integer, Map<String, Object>> {
     protected final Logger logger;
     protected final AsynchronousSocketChannel client;
-    private final int limitAllocateBufferForRequest;
+    private final long limitAllocateBufferForRequest;
 
-    public HttpCattyQueryHandler(AsynchronousSocketChannel clientChannel, int limitBuffer, Logger loggerInstance) {
+    public HttpCattyQueryHandler(AsynchronousSocketChannel clientChannel, long limitBuffer, Logger loggerInstance) {
         client = clientChannel;
         limitAllocateBufferForRequest = limitBuffer;
         logger = loggerInstance;

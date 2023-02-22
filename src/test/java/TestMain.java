@@ -163,8 +163,8 @@ public class TestMain {
         try(final ICattyEngine engine = new CattyEngine(
             new InetSocketAddress(8080),
             1,
-            5000000,
-            TestMain.Handler::new
+            5000000L,
+            Handler::new
         )) {
             engine.setLogger(logger);
             engine.startServer();
@@ -175,7 +175,7 @@ public class TestMain {
 
     static class Handler extends HttpCattyQueryHandler {
 
-        public Handler(AsynchronousSocketChannel clientChannel, int limitBuffer, Logger loggerInstance) {
+        public Handler(AsynchronousSocketChannel clientChannel, long limitBuffer, Logger loggerInstance) {
             super(clientChannel, limitBuffer, loggerInstance);
         }
 
