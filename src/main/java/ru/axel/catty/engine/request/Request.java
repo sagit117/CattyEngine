@@ -93,8 +93,8 @@ public final class Request implements IHttpCattyRequest {
         setPath(starts[1]);
         version = starts[2];
 
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("Запрос создан. StartLine: " + String.join(", ", starts));
+        if (logger.isLoggable(Level.CONFIG)) {
+            logger.config("Запрос создан. StartLine: " + String.join(", ", starts));
         }
     }
 
